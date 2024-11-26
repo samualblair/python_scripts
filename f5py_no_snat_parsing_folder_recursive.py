@@ -102,14 +102,16 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
     printable_string = printable_string + '===' + '\n'
 
     # Outfile string
-    outfile_string = bigip_conf_filename + "_outfile.txt"
+    outfile_string = bigip_conf_filename[:-5] + "_outfile.txt"
 
-    # More predictable to use this style
-    with open(outfile_string, 'w') as outfile:
-        outfile.write(printable_string)
+    # Only print file if there is something present
+    if printable_string != '===' + '\n' + '=== ANY SECTION ===' + '\n' + '===' + '\n' :
+        # More predictable to use this style
+        with open(outfile_string, 'w') as outfile:
+            outfile.write(printable_string)
 
     # Outfile2 string
-    outfile_string_2 = bigip_conf_filename + "_no_snat_outfile.txt"
+    outfile_string_2 = bigip_conf_filename[:-5] + "_no_snat_outfile.txt"
 
     nosnat_printable_string = ""
     nosnat_string_dictionary = {}

@@ -2,9 +2,10 @@
 # Leveraging f5py module
 # Paring code to filter out information regarding virtual servers
 
+# import required module
+# import os
 import json
 # import pprint
-#from f5py import *
 import f5py
 import sys
 
@@ -40,5 +41,8 @@ if __name__ == "__main__":
     # print(sys.argv[1])
     try:
         convert_to_json(sys.argv[1])
+    # Catch when file is not parsable UTF 8 or similar
+    except UnicodeDecodeError:
+        print('Fail to read file - ' + sys.argv[1] + ' : Is this a file to be read?')
     except IndexError:
         convert_to_json()

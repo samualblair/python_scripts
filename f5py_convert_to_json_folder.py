@@ -6,11 +6,8 @@
 import os
 import json
 # import pprint
-#from f5py import *
 import f5py
 # import sys
-
-
 
 def convert_to_json(bigip_conf_filename:str='bigip.conf') -> None:
     """
@@ -36,7 +33,7 @@ def convert_to_json(bigip_conf_filename:str='bigip.conf') -> None:
     json_string = json.dumps(ltm_dict, indent=4)
     # print(json_string)
 
-    with open(bigip_conf_filename + '.json', 'w') as input_file:
+    with open(bigip_conf_filename[:-5] + '.json', 'w') as input_file:
         input_file.write(json_string + "\n")
 
 
@@ -45,8 +42,7 @@ if __name__ == "__main__":
     # directory = 'VPXRP01'
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
-    # iterate over files in
-    # that directory
+    # iterate over files in that directory
 
     # print(sys.argv[1])
     try:
@@ -55,7 +51,9 @@ if __name__ == "__main__":
             # checking if it is a file
             if os.path.isfile(file_contents):
                 try:
-                    convert_to_json(file_contents)
+                    # Only try to parse file if it is name ends with .json
+                    if file_name[-5:] == ".conf":
+                        convert_to_json(file_contents)
                 # Catch when file is not parsable UTF 8 or similar
                 except UnicodeDecodeError:
                     print('Fail to read file - ' + file_name + ' : Is this a file to be read?')

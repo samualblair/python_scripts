@@ -36,7 +36,7 @@ def convert_to_json(bigip_conf_filename:str='bigip.conf') -> None:
     json_string = json.dumps(ltm_dict, indent=4)
     # print(json_string)
 
-    with open(bigip_conf_filename + '.json', 'w') as input_file:
+    with open(bigip_conf_filename[:-5] + '.json', 'w') as input_file:
         input_file.write(json_string + "\n")
 
 
