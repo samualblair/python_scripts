@@ -17,7 +17,7 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview') -> None:
     # print('this_is_file'+file_output)
 
     # Run shell commands to get test in byte form
-    config_files_sting_byte = subprocess.Popen(f'tar -tzf "{bigip_conf_filename}"| grep -E "bigip.conf|bigip_base.conf" | grep -v -E ".diffVersions|.bak|openvswitch"', shell=True, stdout=subprocess.PIPE).stdout.read()
+    config_files_sting_byte = subprocess.Popen(f'tar -tzf "{bigip_conf_filename}"| grep -E "bigip.conf|bigip_base.conf" | grep -v -E ".diffVersions|.bak|openvswitch|conf.sysinit|conf.default|defaults/"', shell=True, stdout=subprocess.PIPE).stdout.read()
 
     # Must convert byte recorded output into string output to use in normal string manner
     config_files_sting = config_files_sting_byte.decode('UTF-8')    
