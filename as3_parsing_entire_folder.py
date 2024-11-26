@@ -6,7 +6,7 @@ import os
 import as3_parsing_function as as3_parsing_function
 
 # assign directory
-# directory = 'VPXRP01'
+# directory = 'LB01'
 directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
 # iterate over files in
