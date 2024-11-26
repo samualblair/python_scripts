@@ -56,21 +56,28 @@ if __name__ == "__main__":
 
     # iterate over files in
     # that directory
+    # Walk directory tree and record for later use
+    recursive_folder_list = []    
+    for currentpath, folders, files in os.walk(directory):
+        for folder in folders:
+            # print(os.path.join(currentpath, file))
+            recursive_folder_list.append(os.path.join(currentpath, folder))
 
     # print(sys.argv[1])
     try:
-        for file_name in os.listdir(directory):
-            file_contents = os.path.join(directory, file_name)
-            # checking if it is a file
-            if os.path.isfile(file_contents):
-                try:
-                    # Only try to parse file if it is name ends with .json
-                    if file_name[-7:] == ".qkview":
-                        extract_bigip_conf(file_contents)
-                    elif file_name[-7:] == ".tar.gz":
-                        extract_bigip_conf(file_contents)
-                # Catch when file is not parsable UTF 8 or similar
-                except UnicodeDecodeError:
-                    print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
+        for folder_name in recursive_folder_list:
+            for file_name in os.listdir(folder_name):
+                file_contents = os.path.join(folder_name, file_name)
+                # checking if it is a file
+                if os.path.isfile(file_contents):
+                    try:
+                        # Only try to parse file if it is name ends with .json
+                        if file_name[-7:] == ".qkview":
+                            extract_bigip_conf(file_contents)
+                        elif file_name[-7:] == ".tar.gz":
+                            extract_bigip_conf(file_contents)
+                    # Catch when file is not parsable UTF 8 or similar
+                    except UnicodeDecodeError:
+                        print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
     except IndexError:
         print('Issue with file - ' + file_name)
