@@ -49,6 +49,11 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
                 new_dict[x['name']]['snatpool'] = x['source-address-translation']['type']
             except:
                 new_dict[x['name']]['snatpool'] = "NO-SNAT"
+        
+        try:
+            new_dict[x['name']]['pool'] = x['pool']
+        except:
+            new_dict[x['name']]['pool'] = "NO-POOL"
 
     string_dictionary = {}
     string_dictionary['ANY'] = ""
@@ -76,6 +81,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
                 working_string = working_string + 'Name       : '+ new_dict[x]['name'] + '\n'
                 working_string = working_string + 'VS-IP:PORT : '+ new_dict[x]['destination'] + '\n'
                 working_string = working_string + 'SNAT-POOL  : '+ new_dict[x]['snatpool'] + '\n'
+                working_string = working_string + 'POOL       : '+ new_dict[x]['pool'] + '\n'
 
                 current_string = string_dictionary[entry]
                 string_dictionary[entry] = current_string + working_string
@@ -88,6 +94,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             working_string = working_string + 'Name       : '+ new_dict[x]['name'] + '\n'
             working_string = working_string + 'VS-IP:PORT : '+ new_dict[x]['destination'] + '\n'
             working_string = working_string + 'SNAT-POOL  : '+ new_dict[x]['snatpool'] + '\n'
+            working_string = working_string + 'POOL       : '+ new_dict[x]['pool'] + '\n'
 
             current_string = string_dictionary[entry]
             string_dictionary[entry] = current_string + working_string
@@ -126,6 +133,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             working_string = working_string + 'Name       : '+ new_dict[x]['name'] + '\n'
             working_string = working_string + 'VS-IP:PORT : '+ new_dict[x]['destination'] + '\n'
             working_string = working_string + 'SNAT-POOL  : '+ new_dict[x]['snatpool'] + '\n'
+            working_string = working_string + 'POOL       : '+ new_dict[x]['pool'] + '\n'
             
             if type(new_dict[x]['vlans']) == list:
                 # print('is a list')
