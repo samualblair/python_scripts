@@ -1,7 +1,7 @@
-# Outlook Email Template
+# F5 Extract and Parse Workflow 1
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
-[![f5py](https://img.shields.io/badge/appscript-darkblue)](https://appscript.sourceforge.io/py-appscript/index.html)
+[![f5py](https://img.shields.io/badge/f5py-0.3.0-red)](https://pypi.org/project/f5py)
 
 Python Scripts to provide Template Experience with Outlook Client
 
