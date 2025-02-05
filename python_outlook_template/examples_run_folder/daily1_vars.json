@@ -1,0 +1,11 @@
+{
+    "subject_vars": {
+        "case": "xxxx",
+        "client_name": "zzzz",
+        "title": "Daily Email – Group 123"
+    },
+    "in_file_name": "shell_body.html",
+    "to_recip" : [],
+    "cc_recip" : ["user1@example.com"],
+    "bcc_recip" : ["user123@example.com","group123@example.com"]
+}
