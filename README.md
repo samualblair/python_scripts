@@ -17,8 +17,11 @@ An email draft will open in outlook, ready for final touches and/or to be sent.
 [![f5py](https://img.shields.io/badge/f5py-0.3.0-red)](https://pypi.org/project/f5py)
 
 Extracts F5 configuration from F5 Qkview file.
+
 Convert to JSON for easier parsing.
+
 Parse config and output no SNAT Virtual Servers
+
 Continue to parse previous output and output no SNAT details summary
 
 ## Others
@@ -27,8 +30,11 @@ Continue to parse previous output and output no SNAT details summary
 [![f5py](https://img.shields.io/badge/f5py-0.3.0-red)](https://pypi.org/project/f5py)
 
 F5 AS3 Parsing
+
 F5 Convert to JSON for easier parsing
+
 F5 Extract configs from Qkview file all configuration
+
 F5 Extract no snat configs and produce summary
 
 
