@@ -37,9 +37,8 @@ F5 Extract configs from Qkview file all configuration
 
 F5 Extract no snat configs and produce summary
 
-
 ## Authors
-[Michael W Johnson](mailto:michael.johnson2@cdw.com)  ([@MichaelWJohnson-Mongoose](https://github.com/MichaelWJohnson-Mongoose))
+Michael Johnson ([@samualblair](https://github.com/samualblair))
 
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
