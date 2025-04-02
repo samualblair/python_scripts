@@ -1,5 +1,5 @@
 # Created by: Michael Johnson - 04-1-2025
-# Paring code to extract big-ip configurations from archives
+# Parsing code to extract big-ip configurations from archives
 import os
 # import json
 # import pprint
