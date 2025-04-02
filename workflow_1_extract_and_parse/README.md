@@ -133,5 +133,6 @@ Please enter folder name to parse all files within (HINT: may navigate back a fo
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.02 - Compare and Except refactoring, added UCS support
 * 2025.01.21 - General release
 * Pre-release development
