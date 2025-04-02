@@ -38,21 +38,21 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             else:
                 new_dict[x['name']]['vlans'] = x['vlans'][0]
                 # print('only one')
-        except:
+        except KeyError:
             new_dict[x['name']]['vlans'] = "ANY"
             # print('any')
        
         try:
             new_dict[x['name']]['snatpool'] = x['source-address-translation']['pool']
-        except:
+        except KeyError:
             try:
                 new_dict[x['name']]['snatpool'] = x['source-address-translation']['type']
-            except:
+            except KeyError:
                 new_dict[x['name']]['snatpool'] = "NO-SNAT"
         
         try:
             new_dict[x['name']]['pool'] = x['pool']
-        except:
+        except KeyError:
             new_dict[x['name']]['pool'] = "NO-POOL"
 
     string_dictionary = {}
@@ -146,7 +146,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             try:
                 current_string = nosnat_string_dictionary[entry]
                 nosnat_string_dictionary[entry] = current_string + working_string
-            except:
+            except KeyError:
                 nosnat_string_dictionary[entry] = working_string
 
     nosnat_printable_string = ""
