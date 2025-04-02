@@ -6,10 +6,126 @@
 Python Scripts to provide Template Experience with Outlook Client
 
 Ensure dependancies are installed, or available in local folder.
-To use Duplicate template, customizing variables file and body of email (HTML format).
-Run helper script, in same folder as primary script.
+Currently exctracting all configs expects a sub-folder holding the compressed files (ucs, qkview, or tar.gz).
 
-An email draft will open in outlook, ready for final touches and/or to be sent.
+## Usage Example for Script 1:
+```bash
+# Clone into folder ./
+# Ensure you are in this folder
+❯ pwd
+/Users/exampleuser/workingfolder
+
+❯ ls -1
+1 - extract_all_bigip_configs_recursive.py
+2 - f5py_convert_to_json_folder_recursive.py
+3 - f5py_no_snat_parsing_folder_recursive.py
+4 - f5_combine_no_SNAT_details.py
+
+# this folder has all python scripts
+# create sub-folder(s) for ucs, qkview, or tar.gz
+❯ mkdir ucs_files
+❯ mkdir qkviews
+❯ mkdir other_names
+
+❯ ls -1
+1 - extract_all_bigip_configs_recursive.py
+2 - f5py_convert_to_json_folder_recursive.py
+3 - f5py_no_snat_parsing_folder_recursive.py
+4 - f5_combine_no_SNAT_details.py
+ucs_files
+qkviews
+other_names
+
+# Move/copy files into ucs_files
+run script , and call current folder
+
+# Move/copy files into ucs_files
+# run script , and call current folder
+❯ python3 "1 - extract_all_bigip_configs_recursive.py"
+Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
+./
+❯
+
+# Can now confirm extraction has occured for all sub-folders and files
+❯ ls -1 -R
+1 - extract_all_bigip_configs_recursive.py
+2 - f5py_convert_to_json_folder_recursive.py
+3 - f5py_no_snat_parsing_folder_recursive.py
+4 - f5_combine_no_SNAT_details.py
+ucs_files
+qkviews
+other_names
+
+./ucs_files:
+F5a-Backup_UCS.ucs
+F5a-Backup_UCS_unpacked # New folder with unpacked configs
+F5b-Backup_UCS.ucs
+F5b-Backup_UCS_unpacked # New folder with unpacked configs
+
+./ucs_files/F5a-Backup_UCS_unpacked:
+config # original config folder structure maintained
+
+./ucs_files/F5a-Backup_UCS_unpacked/config:
+bigip.conf # Extracted 'common' configs
+bigip_base.conf # Extracted 'common' configs
+partitions # original config folder structure maintained including partitions
+
+./ucs_files/F5b-Backup_UCS_unpacked/config/partitions:
+Prod-App # original config folder structure maintained including partitions
+Prod-DMZ # original config folder structure maintained including partitions
+Dev-App # original config folder structure maintained including partitions
+Dev-DMZ # original config folder structure maintained including partitions
+
+./ucs_files/F5b-Backup_UCS_unpacked/config/partitions/Prod-App:
+bigip.conf # Extracted 'partition' configs if present
+bigip_base.conf # Extracted 'partition' configs if present (source often may not always have a bigip_base.conf)
+
+
+## Etc...
+```
+
+## Read to run all other scripts in same manner in order (2,3,4):
+```bash
+> python3 "2 - f5py_convert_to_json_folder_recursive.py"
+Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
+./
+
+# Can now confirm extraction has occured for all sub-folders and files from script 2
+❯ ls -1 -R
+## ommitted all but single example##
+./ucs_files/F5a-Backup_UCS_unpacked/config:
+bigip.conf
+bigip.json # New file in JSON format (proprietary to f5py module)
+bigip_base.conf
+bigip_base.json # New file in JSON format (proprietary to f5py module)
+partitions
+## ommitted ##
+
+
+
+> python3 "3 - f5py_no_snat_parsing_folder_recursive.py"
+Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
+./
+
+# Can now confirm extraction has occured for all sub-folders and files
+❯ ls -1 -R
+## ommitted all but single example##
+./ucs_files/F5a-Backup_UCS_unpacked/config:
+bigip.conf
+bigip.json
+bigip_base.conf
+bigip_base.json
+bigip_no_snat_outfile.txt # New file for report
+bigip_outfile.txt # New file for report
+partitions
+## ommitted ##
+
+> python3 "4 - f5_combine_no_SNAT_details.py"
+Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
+./
+## Ommited output report that is printed on screen from script 4 ##
+## Can redirect output to file if desired, currently script 4 does not create any files
+```
 
 ## Authors
 [Michael W Johnson](mailto:michael.johnson2@cdw.com)  ([@MichaelWJohnson-Mongoose](https://github.com/MichaelWJohnson-Mongoose))
