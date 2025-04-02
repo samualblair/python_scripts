@@ -1,4 +1,5 @@
-# Paring code to filter out informatoin regarding virtual servers
+# Created by: Michael Johnson - 04-1-2025
+# Paring code to extract big-ip configurations from archives
 import os
 # import json
 # import pprint
@@ -6,7 +7,7 @@ import subprocess
 
 # subprocess.run(["ls", "-l"]) 
 
-def extract_bigip_conf(bigip_conf_filename:str='support.qkview') -> None:
+def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> None:
     """
     Extracts Config Files from qkview
     """
@@ -27,12 +28,12 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview') -> None:
     # print(string_list)
 
     try:
-        os.mkdir(f'{bigip_conf_filename[2:len(bigip_conf_filename)-7]}_unpacked')
+        os.mkdir(f'{bigip_conf_filename[2:len(bigip_conf_filename)-file_extention_length]}_unpacked')
     except FileExistsError:
         print('Folder already existed')
 
     for config_tar_file_path in string_list:
-        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{bigip_conf_filename[2:len(bigip_conf_filename)-7]}_unpacked" "{config_tar_file_path}"'
+        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{bigip_conf_filename[2:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
         subprocess.run(sub_comamnd, shell=True)
 
         
@@ -76,6 +77,8 @@ if __name__ == "__main__":
                             extract_bigip_conf(file_contents)
                         elif file_name[-7:] == ".tar.gz":
                             extract_bigip_conf(file_contents)
+                        elif file_name[-4:] == ".ucs":
+                            extract_bigip_conf(file_contents,4)
                     # Catch when file is not parsable UTF 8 or similar
                     except UnicodeDecodeError:
                         print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
