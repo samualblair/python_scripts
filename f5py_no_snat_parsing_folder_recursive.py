@@ -1,4 +1,4 @@
-# Created by: Michael Johnson - 11-21-2024
+# Created by: Michael Johnson - 04-02-2025
 # Leveraging a json file that was previously created, such as the one from f5py module
 # Parsing code to filter out information regarding virtual servers
 # Specifically create both:
@@ -31,28 +31,28 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
         new_dict[x['name']]['destination'] = x['destination']
         try:
             #new_dict[x['name']]['vlans'] = x['vlans'][0]
-            if type(x['vlans']) == list:
+            if isinstance(x['vlans'], list):
                 new_dict[x['name']]['vlans'] = x['vlans']
                 # print(new_dict[x['name']]['vlans'])
                 # print('a list')
             else:
                 new_dict[x['name']]['vlans'] = x['vlans'][0]
                 # print('only one')
-        except:
+        except KeyError:
             new_dict[x['name']]['vlans'] = "ANY"
             # print('any')
        
         try:
             new_dict[x['name']]['snatpool'] = x['source-address-translation']['pool']
-        except:
+        except KeyError:
             try:
                 new_dict[x['name']]['snatpool'] = x['source-address-translation']['type']
-            except:
+            except KeyError:
                 new_dict[x['name']]['snatpool'] = "NO-SNAT"
         
         try:
             new_dict[x['name']]['pool'] = x['pool']
-        except:
+        except KeyError:
             new_dict[x['name']]['pool'] = "NO-POOL"
 
     string_dictionary = {}
@@ -60,7 +60,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
 
     # Prepare dictionary keys
     for x in new_dict:
-        if type(new_dict[x]['vlans']) == list:
+        if isinstance(new_dict[x]['vlans'], list):
             for entry in new_dict[x]['vlans']:
                 string_dictionary[entry] = ""
         else:
@@ -72,7 +72,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
         #print(new_dict[x]['vlans'])
 
         # value_vlans = new_dict[x]['vlans']
-        if type(new_dict[x]['vlans']) == list:
+        if isinstance(new_dict[x]['vlans'], list):
             # print('is a list')
             for entry in new_dict[x]['vlans']:
 
@@ -135,7 +135,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             working_string = working_string + 'SNAT-POOL  : '+ new_dict[x]['snatpool'] + '\n'
             working_string = working_string + 'POOL       : '+ new_dict[x]['pool'] + '\n'
             
-            if type(new_dict[x]['vlans']) == list:
+            if isinstance(new_dict[x]['vlans'], list):
                 # print('is a list')
                 for vlan_entry in new_dict[x]['vlans']:
                     working_string = working_string + 'VLAN  : ' + vlan_entry + '\n'
@@ -146,7 +146,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             try:
                 current_string = nosnat_string_dictionary[entry]
                 nosnat_string_dictionary[entry] = current_string + working_string
-            except:
+            except KeyError:
                 nosnat_string_dictionary[entry] = working_string
 
     nosnat_printable_string = ""
