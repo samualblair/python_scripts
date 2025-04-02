@@ -31,7 +31,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
         new_dict[x['name']]['destination'] = x['destination']
         try:
             #new_dict[x['name']]['vlans'] = x['vlans'][0]
-            if type(x['vlans']) == list:
+            if isinstance(x['vlans'], list):
                 new_dict[x['name']]['vlans'] = x['vlans']
                 # print(new_dict[x['name']]['vlans'])
                 # print('a list')
@@ -60,7 +60,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
 
     # Prepare dictionary keys
     for x in new_dict:
-        if type(new_dict[x]['vlans']) == list:
+        if isinstance(new_dict[x]['vlans'], list):
             for entry in new_dict[x]['vlans']:
                 string_dictionary[entry] = ""
         else:
@@ -72,7 +72,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
         #print(new_dict[x]['vlans'])
 
         # value_vlans = new_dict[x]['vlans']
-        if type(new_dict[x]['vlans']) == list:
+        if isinstance(new_dict[x]['vlans'], list):
             # print('is a list')
             for entry in new_dict[x]['vlans']:
 
@@ -135,7 +135,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
             working_string = working_string + 'SNAT-POOL  : '+ new_dict[x]['snatpool'] + '\n'
             working_string = working_string + 'POOL       : '+ new_dict[x]['pool'] + '\n'
             
-            if type(new_dict[x]['vlans']) == list:
+            if isinstance(new_dict[x]['vlans'], list):
                 # print('is a list')
                 for vlan_entry in new_dict[x]['vlans']:
                     working_string = working_string + 'VLAN  : ' + vlan_entry + '\n'
