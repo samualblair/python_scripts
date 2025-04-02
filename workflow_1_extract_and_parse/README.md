@@ -3,10 +3,15 @@
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![f5py](https://img.shields.io/badge/f5py-0.3.0-red)](https://pypi.org/project/f5py)
 
-Python Scripts to provide Template Experience with Outlook Client
-
 Ensure dependancies are installed, or available in local folder.
+
 Currently exctracting all configs expects a sub-folder holding the compressed files (ucs, qkview, or tar.gz).
+
+Convert to JSON for easier parsing.
+
+Parse config and output no SNAT Virtual Servers
+
+Continue to parse previous output and output no SNAT details summary
 
 ## Usage Example for Script 1:
 ```bash
