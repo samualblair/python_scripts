@@ -9,7 +9,7 @@ import subprocess
 
 def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> None:
     """
-    Extracts Config Files from qkview
+    Extracts Config Files fand Certificates from bigip archive - qkview, ucs, generic tar.gz
     """
 #    subcomamnd = f'tar -tzf {bigip_conf_filename}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"'
 #    subprocess.run(subcomamnd)
@@ -52,7 +52,6 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
 
 if __name__ == "__main__":
     # assign directory
-    # directory = 'VPXRP01'
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # iterate over files in
