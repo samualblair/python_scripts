@@ -24,6 +24,18 @@ Parse config and output no SNAT Virtual Servers
 
 Continue to parse previous output and output no SNAT details summary
 
+### F5 Extract and Parse Workflow 2 (workflow_2_extract_merge_combine)
+[![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+
+Extracts F5 configuration and Certificates from F5 Qkview, UCS, or generic tar.gz file.
+
+Organize and assist with merging.
+
+TODO: Directly assist with merging.
+
+TODO: Assist with Re-Archiving.
+
 ## Others
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -43,6 +55,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.03 - Addition of workflow 2
 * 2025.04.02 - Compare and Except refactoring, added UCS support for extracting bigip configs
 * 2025.02.05 - Addition of outlook template
 * 2025.01.21 - General release
