@@ -5,7 +5,7 @@
 
 Ensure dependancies are installed, or available in local folder.
 
-Currently exctracting all configs expects a sub-folder holding the compressed files (ucs, qkview, or tar.gz).
+Looks in destination folder, and subfolders for compressed files (ucs, qkview, or tar.gz).
 
 Convert to JSON for easier parsing.
 
@@ -138,6 +138,7 @@ Please enter folder name to parse all files within (HINT: may navigate back a fo
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.07 - Folder recursion Fixes
 * 2025.04.02 - Compare and Except refactoring, added UCS support
 * 2025.01.21 - General release
 * Pre-release development

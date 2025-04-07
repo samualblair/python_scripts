@@ -55,6 +55,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.07 - Folder recursion Fixes
 * 2025.04.03 - Addition of workflow 2
 * 2025.04.02 - Compare and Except refactoring, added UCS support for extracting bigip configs
 * 2025.02.05 - Addition of outlook template

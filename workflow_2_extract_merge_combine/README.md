@@ -2,7 +2,7 @@
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-Currently exctracting all configs expects a sub-folders holding the compressed files (ucs, qkview, or tar.gz). Also extract any certificates and keys into sub folders.
+Looks in destination folder, and subfolders for compressed files (ucs, qkview, or tar.gz). Also extract any certificates and keys into sub folders.
 
 TODO: Proceed to extract entire first (base) configuration archive.
 TODO: Merge in additional certificates from other devices.
@@ -105,4 +105,5 @@ certificate_key_d # Extracted 'keys folder' configs if present
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.07 - Folder recursion Fixes
 * 2025.04.03 - General release
