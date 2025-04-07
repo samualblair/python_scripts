@@ -28,12 +28,15 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
     # print(string_list)
 
     try:
-        os.mkdir(f'{bigip_conf_filename[2:len(bigip_conf_filename)-file_extention_length]}_unpacked')
+        # Take current filename as-is expecting path to be included if needed
+        os.mkdir(f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
     except FileExistsError:
-        print('Folder already existed')
+        # Notify that folder already existed
+        print(f'Folder already existed - {bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
 
     for config_tar_file_path in string_list:
-        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{bigip_conf_filename[2:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
+        # Take current filename as-is expecting path to be included if needed
+        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
         subprocess.run(sub_comamnd, shell=True)
 
         
@@ -62,6 +65,8 @@ if __name__ == "__main__":
         for folder in folders:
             # print(os.path.join(currentpath, file))
             recursive_folder_list.append(os.path.join(currentpath, folder))
+    # Also add base folder to list
+    recursive_folder_list.append(directory)
 
     # print(sys.argv[1])
     try:

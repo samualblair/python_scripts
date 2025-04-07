@@ -177,6 +177,8 @@ if __name__ == "__main__":
         for folder in folders:
             # print(os.path.join(currentpath, file))
             recursive_folder_list.append(os.path.join(currentpath, folder))
+    # Also add base folder to list
+    recursive_folder_list.append(directory)
 
     # print(sys.argv[1])
     try:
