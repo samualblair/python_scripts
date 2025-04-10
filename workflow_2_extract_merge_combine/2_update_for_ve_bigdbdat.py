@@ -16,50 +16,35 @@ def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) 
     # Read in config file (BigDB.dat)
     bigdb_config.read(bigdb_filename)
 
-    # Testing area
-    # bigdb_config.sections()
-    # for key in bigdb_config['Cluster.MgmtIpaddr']:
-    #     print(key)
-    # for key in bigdb_config['Cluster.MgmtIpaddr']:
-    #     print(key,' = ',bigdb_config['Cluster.MgmtIpaddr'][key])
-    # for key in bigdb_config['Cluster.MgmtIpaddr']:
-    #     print(key+'='+bigdb_config['Cluster.MgmtIpaddr'][key])
-    # [License.MaxCores] , key - 'value' , and value - ex. '8' aka ex. 'value=8'
-    # for key in bigdb_config['License.MaxCores']:
-    #     print(key+'='+bigdb_config['License.MaxCores'][key])
-
     # If not present, will raise 'KeyError'
     try:
-        print('The [License.MaxCores] value= is already set to', bigdb_config['License.MaxCores']['value'])
+        # Inform user file already have value set
+        print('[License.MaxCores] value= is already set to', bigdb_config['License.MaxCores']['value'],'in the file',bigdb_filename)
+        # Nothing left to do so return
+        return
+
     except KeyError:
-        print('Updating [License.MaxCores] with value=8')
+        # Key needs to be set - inform users it will be set
+        print('Updating [License.MaxCores] with value=8 in the file',bigdb_filename)
+
         bigdb_config['License.MaxCores']['value'] = '8'
 
-    # This makes the file read/write for the owner, Read for Group, Read for Other
-    os.chmod(bigdb_filename, S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH)
+        # This makes the file read/write for the owner, Read for Group, Read for Other
+        os.chmod(bigdb_filename, S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH)
 
-    # Will Fail if file is marked as read-only
-    with open(bigdb_filename, 'w') as bigdb_configfile:
-        bigdb_config.write(bigdb_configfile, space_around_delimiters=False)
+        # Will Fail if file is marked as read-only
+        with open(bigdb_filename, 'w') as bigdb_configfile:
+            bigdb_config.write(bigdb_configfile, space_around_delimiters=False)
 
-    temp_file_contents = ""
-    # Remove blank lines to allow easier error checking by admin
-    with open(bigdb_filename, 'r') as bigdb_configfile:
-        temp_file_contents = bigdb_configfile.read().replace('\n\n', '\n')
-    with open(bigdb_filename, 'w') as bigdb_configfile:
-        bigdb_configfile.write(temp_file_contents)
+        temp_file_contents = ""
+        # Remove blank lines to allow easier error checking by admin
+        with open(bigdb_filename, 'r') as bigdb_configfile:
+            temp_file_contents = bigdb_configfile.read().replace('\n\n', '\n')
+        with open(bigdb_filename, 'w') as bigdb_configfile:
+            bigdb_configfile.write(temp_file_contents)
 
-    # Alternative method to Remove blank lines to allow easier error checking by admin
-    # with open('BigDB.dat') as file_in: 
-    #     temp_file_contents = list(line for line in (each_line.strip() for each_line in file_in) if line)
-    # with open('BigDB.dat', 'w') as bigdb_configfile:
-    #     for line in temp_file_contents:
-    #         bigdb_configfile.write(f"{line}\n")
-
-    # This makes the file read only again (User, Group,)
-    os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
-
-
+        # This makes the file read only again (User, Group,)
+        os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
 
 
 
