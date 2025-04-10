@@ -99,11 +99,27 @@ certificate_key_d # Extracted 'keys folder' configs if present
 ## Etc...
 ```
 
+## Usage Example for Script 2:
+```bash
+# run script , and call current folder
+❯ python3 "2_update_for_ve_bigdbdat.py"
+Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
+./
+
+# Script will print on screen status as it updates files or skips over them (for any BigDB.dat file it finds)
+Updating [License.MaxCores] with value=8 in the file ./ucs_files/F5a-Backup_UCS_unpacked/config/BigDB.dat
+[License.MaxCores] value= is already set to 8 in the file ./ucs_files/F5a-Backup_UCS_unpacked/config/BigDB.dat
+[License.MaxCores] value= is already set to 8 in the file ./ucs_files/F5a-Backup_UCS_unpacked/config/BigDB.dat
+❯
+
+```
+
 ## Authors
 [Michael W Johnson](mailto:michael.johnson2@cdw.com)  ([@MichaelWJohnson-Mongoose](https://github.com/MichaelWJohnson-Mongoose))
 
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.08 - Added BigDB.dat modify for VE change script
 * 2025.04.07 - Folder recursion Fixes
 * 2025.04.03 - General release

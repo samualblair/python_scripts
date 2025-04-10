@@ -30,6 +30,8 @@ Continue to parse previous output and output no SNAT details summary
 
 Extracts F5 configuration and Certificates from F5 Qkview, UCS, or generic tar.gz file.
 
+Modifes BigDB.dat files to support VE licensing.
+
 Organize and assist with merging.
 
 TODO: Directly assist with merging.
@@ -55,6 +57,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.08 - Added BigDB.dat modify for VE change script to workflow 2
 * 2025.04.07 - Folder recursion Fixes
 * 2025.04.03 - Addition of workflow 2
 * 2025.04.02 - Compare and Except refactoring, added UCS support for extracting bigip configs
