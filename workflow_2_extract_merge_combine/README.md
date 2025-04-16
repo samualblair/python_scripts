@@ -5,9 +5,11 @@
 Looks in destination folder, and subfolders for compressed files (ucs, qkview, or tar.gz). Also extract any certificates and keys into sub folders.
 
 TODO: Proceed to extract entire first (base) configuration archive.
+
 TODO: Merge in additional certificates from other devices.
 
 TODO: : Assist with some of config merges
+
 MANUAL PROCESS: MERGE Configuration from files
 - Create new folder with (base) configs
 - Merge in configs (bigip.conf , bigip_base.conf, etc) from additional devices into first
