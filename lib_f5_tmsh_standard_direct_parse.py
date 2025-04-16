@@ -1,4 +1,4 @@
-# Created by: Michael Johnson - 11-21-2024
+# Created by: Michael Johnson - 04-15-2025
 # Paring code to filter out information from tmsh bigip.conf file (standard tmsh format or oneline format)
 # Initial idea from nsmcan @DevCentral
 # See [https:]//community[.]f5[.]com/discussions/technicalforum/any-python-experts-out-there---parsing-tmsh-list/297634

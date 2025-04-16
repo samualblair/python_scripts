@@ -51,12 +51,15 @@ F5 Extract configs from Qkview file all configuration
 
 F5 Extract no snat configs and produce summary
 
+F5 Parse bigip.conf (normal and oneline) to dictionary format
+
 ## Authors
 Michael Johnson ([@samualblair](https://github.com/samualblair))
 
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.15 - Added BigIP tmsh to Dictionary parsing script
 * 2025.04.08 - Added BigDB.dat modify for VE change script to workflow 2
 * 2025.04.07 - Folder recursion Fixes
 * 2025.04.03 - Addition of workflow 2
