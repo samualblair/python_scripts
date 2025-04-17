@@ -36,7 +36,7 @@ Organize and assist with merging.
 
 TODO: Directly assist with merging.
 
-TODO: Assist with Re-Archiving.
+Assist with Re-Archiving.
 
 ## Others
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
@@ -59,6 +59,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.17 - Added Script for extract, modify BigDB.dat, and re-archive script for workflow 2
 * 2025.04.15 - Added BigIP tmsh to Dictionary parsing script
 * 2025.04.08 - Added BigDB.dat modify for VE change script to workflow 2
 * 2025.04.07 - Folder recursion Fixes
