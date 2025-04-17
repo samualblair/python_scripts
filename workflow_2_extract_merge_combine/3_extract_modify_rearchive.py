@@ -5,26 +5,11 @@ import subprocess
 import configparser
 from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
 
-def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> str:
+def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> str:
     """
-    Extracts Config Files fand Certificates from bigip archive - qkview, ucs, generic tar.gz
+    Extracts All Files from bigip archive - qkview, ucs, generic tar.gz
     Will return string with folder path of extracted (with original name + _unpacked)
     """
-    # subcomamnd = f'tar -tzf {bigip_conf_filename}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"'
-    # subprocess.run(subcomamnd)
-    # command_output = subprocess.run(f'tar -tzf {bigip_conf_filename}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"', shell=True)
-    # print('This is the output'+command_output)
-
-    # Run shell commands to get test in byte form
-    config_files_sting_byte = subprocess.Popen(f'tar -tzf "{bigip_conf_filename}"| grep -E "bigip.conf|bigip_base.conf|/certificate_d/:|/certificate_key_d/:|BigDB.dat" | grep -v -E ".diffVersions|.bak|openvswitch|conf.sysinit|conf.default|defaults/|/bigpipe/"', shell=True, stdout=subprocess.PIPE).stdout.read()
-
-    # Must convert byte recorded output into string output to use in normal string manner
-    config_files_sting = config_files_sting_byte.decode('UTF-8')    
-
-    # Parse out each line, but ignore the last charachter as it will just be a single new line
-    string_list = config_files_sting[0:len(config_files_sting)-1].split("\n")
-    # print(string_list)
-
     path_of_new_folder = (f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
 
     try:
@@ -32,9 +17,8 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
     except FileExistsError:
         print('Folder already existed')
 
-    for config_tar_file_path in string_list:
-        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{path_of_new_folder}" "{config_tar_file_path}"'
-        subprocess.run(sub_comamnd, shell=True)
+    sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{path_of_new_folder}"'
+    subprocess.run(sub_comamnd, shell=True)
     
     return path_of_new_folder
 
@@ -124,10 +108,10 @@ if __name__ == "__main__":
                         # Only try to parse file if it is name ends with .ucs or .tar.gz
                         if file_name[-7:] == ".tar.gz":
                             # Extract archive and store returned extracted folder
-                            extracted_folders_list.append(extract_bigip_conf(file_contents))
+                            extracted_folders_list.append(extract_bigip_archive(file_contents))
                         elif file_name[-4:] == ".ucs":
                             # Extract archive and store returned extracted folder
-                            extracted_folders_list.append(extract_bigip_conf(file_contents,4))
+                            extracted_folders_list.append(extract_bigip_archive(file_contents,4))
                     # Catch when file is not parsable UTF 8 or similar
                     except UnicodeDecodeError:
                         print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
