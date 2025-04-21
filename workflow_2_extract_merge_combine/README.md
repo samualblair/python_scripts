@@ -156,6 +156,7 @@ drwxr-xr-x@ 9 michaelj  staff       288 Apr 17 12:22 f5_2_backup_unpacked
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.21 - BugFix - Enclosed filepath/name in quotes to allow for space and other special characters
 * 2025.04.17 - Added Script for extract, modify BigDB.dat, and re-archive script
 * 2025.04.08 - Added BigDB.dat modify for VE change script
 * 2025.04.07 - Folder recursion Fixes

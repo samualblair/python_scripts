@@ -1,4 +1,4 @@
-# Created by: Michael Johnson - 04-07-2025
+# Created by: Michael Johnson - 04-21-2025
 # Parsing code to extract big-ip configurations and certs from archives
 import os
 # import json
@@ -32,7 +32,7 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
         print('Folder already existed')
 
     for config_tar_file_path in string_list:
-        sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
+        sub_comamnd = f'tar -xzf "{bigip_conf_filename}" -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
         subprocess.run(sub_comamnd, shell=True)
 
         

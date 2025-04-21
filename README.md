@@ -59,6 +59,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.04.21 - BugFix - Enclosed filepath/name in quotes to allow for space and other special characters for workflow 1, workflow 2, and extract
 * 2025.04.17 - Added Script for extract, modify BigDB.dat, and re-archive script for workflow 2
 * 2025.04.15 - Added BigIP tmsh to Dictionary parsing script
 * 2025.04.08 - Added BigDB.dat modify for VE change script to workflow 2

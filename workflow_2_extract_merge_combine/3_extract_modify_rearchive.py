@@ -1,4 +1,4 @@
-# Created by: Michael Johnson - 04-17-2025
+# Created by: Michael Johnson - 04-21-2025
 # Parsing code to extract big-ip ucs, update bigdbdat file, and re-archive
 import os
 import subprocess
@@ -17,7 +17,7 @@ def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extentio
     except FileExistsError:
         print('Folder already existed')
 
-    sub_comamnd = f'tar -xzf {bigip_conf_filename} -C "{path_of_new_folder}"'
+    sub_comamnd = f'tar -xzf "{bigip_conf_filename}" -C "{path_of_new_folder}"'
     subprocess.run(sub_comamnd, shell=True)
     
     return path_of_new_folder
