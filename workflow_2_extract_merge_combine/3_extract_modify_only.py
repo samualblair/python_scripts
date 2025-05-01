@@ -1,5 +1,5 @@
-# Created by: Michael Johnson - 04-21-2025
-# Parsing code to extract big-ip ucs, update bigdbdat file, and re-archive
+# Created by: Michael Johnson - 04-25-2025
+# Parsing code to extract big-ip ucs, update bigdbdat file, but do not rearchive
 import os
 import subprocess
 import configparser
@@ -62,25 +62,6 @@ def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) 
 
         # This makes the file read only again (User, Group,)
         os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
-
-def archive_ucs(bigip_conf_folder:str='support.qkview',file_extention_length:int=9) -> None:
-    """
-    Archives previously extracted files and folders from bigip archive (ucs, generic tar.gz) into a new ucs archive based on input folder path
-    """
-
-    # New file name should be old path without '_unpacked' or -9 charachters, then add '_new.ucs' to end
-    path_of_new_ucs_file = (f'{bigip_conf_folder[0:len(bigip_conf_folder)-file_extention_length]}_new.ucs')
-
-    # Inform User of Creation Start
-    print(f'Starting Creating of archive: "{path_of_new_ucs_file}" from "{bigip_conf_folder}"')
-
-    # Create Archive
-    sub_comamnd = f'tar -czf "{path_of_new_ucs_file}" "{bigip_conf_folder}/"'
-    subprocess.run(sub_comamnd, shell=True)
-
-    # Archive Created
-    print(f'Finished archive: {path_of_new_ucs_file}')
-
 
 if __name__ == "__main__":
     # Assign starting directory to recursivly work in
@@ -157,6 +138,3 @@ if __name__ == "__main__":
     except IndexError:
         print('Issue with file - ' + file_name)
 
-    # Re-Archive in new UCS
-    for folder_name in extracted_folders_list:
-        archive_ucs(folder_name)
