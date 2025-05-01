@@ -5,7 +5,7 @@ Some of these steps must be done outside of the scripts, the scripts are here to
 
 ## Merge Required Process:
 
-- Export .ucs files from legacy F5s (multiple sets of config will exist).
+Export .ucs files from legacy F5s (multiple sets of config will exist).
   - Upload it to a shared location, or directly to the workstation that will be performing workflow.
   - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
   - Preferably Name the file with hostname, date, version
@@ -20,10 +20,10 @@ Some of these steps must be done outside of the scripts, the scripts are here to
     old_hostname3_02-04012025_v15.ucs
     ```
 
-- Download .ucs file to local folder (best to not work with extracting/re-archiving on remote location)
+Download .ucs file to local folder (best to not work with extracting/re-archiving on remote location)
   - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\original
 
-- Execute Script 1 against original .ucs file
+Execute Script 1 against original .ucs file
   - Navigate to script file location (or call out script via full path)
   - Run script 1 (python3 1_extract_all_bigip_config_and_certs_recursive.py)
   - Provide script path for .ucs files
@@ -52,6 +52,10 @@ Finish Merging Process
   - Run 'tar czvf' to create new merged .ucs
 
 Optional (for less confusion) Move new .ucs to 'updated' folder.
+  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\updated
+
+Optional (for working in a group) Upload new .ucs files to remote folder
+  - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
 
 Load on new device (or lab for testing)
   - Ensure new device has a required license level
