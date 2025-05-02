@@ -7,7 +7,7 @@ Some of these steps must be done outside of the scripts, the scripts are here to
 
 Export .ucs files from legacy F5s (multiple sets of config will exist).
   - Upload it to a shared location, or directly to the workstation that will be performing workflow.
-  - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under /\<file-share-root>/legacy_ucs_configs/\<site>/original
   - Preferably Name the file with hostname, date, version
     
     EXAMPLE:
@@ -21,7 +21,7 @@ Export .ucs files from legacy F5s (multiple sets of config will exist).
     ```
 
 Download .ucs file to local folder (best to not work with extracting/re-archiving on remote location)
-  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under \<local-folder-root>/legacy_ucs_configs/\<site>/original
 
 Execute Script 1 against original .ucs file
   - Navigate to script file location (or call out script via full path)
@@ -37,10 +37,10 @@ Execute Script 2 against same location (recursive lookup)
   - Script will modify 'License.MaxCores' value to 8
 
 Optional (for less confusion) Move extracted folder for each device from 'original' folder into 'unpacked' folder 
-  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\unpacked
+  - Example: Place folders with extracted files under \<local-folder-root>/legacy_ucs_configs/\<site>/unpacked
 
 Begin Merging Process
-  - Create new '<new-hostname>_combined' folder. Will start empty.
+  - Create new '\<new-hostname>_combined' folder. Will start empty.
   - Copy first config files and certificates
   - Copy additional certificates (feel free to override conflicts - same name)
   - Merge with second set of config files (manual text edits)
@@ -52,10 +52,10 @@ Finish Merging Process
   - Run 'tar czvf' to create new merged .ucs
 
 Optional (for less confusion) Move new .ucs to 'updated' folder.
-  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\updated
+  - Example: Place .ucs files under \<local-folder-root>/legacy_ucs_configs/\<site>/updated
 
 Optional (for working in a group) Upload new .ucs files to remote folder
-  - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under /\<file-share-root>/legacy_ucs_configs/\<site>/original
 
 Load on new device (or lab for testing)
   - Ensure new device has a required license level

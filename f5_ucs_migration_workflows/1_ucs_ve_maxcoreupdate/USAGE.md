@@ -8,7 +8,7 @@ Currently that means only changes needed to alllow a physical UCS to load into a
 
 Export .ucs files from legacy F5s (multiple sets of config might exist).
   - Upload it to a shared location, or directly to the workstation that will be performing workflow.
-  - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under \<file-share-root>/legacy_ucs_configs/\<site>/original
   - Preferably Name the file with hostname, date, version
     
     EXAMPLE:
@@ -18,7 +18,7 @@ Export .ucs files from legacy F5s (multiple sets of config might exist).
     ```
 
 Download .ucs file to local folder (best to not work with extracting/re-archiving on remote location)
-  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under \<local-folder-root>/legacy_ucs_configs/\<site>/original
 
 Execute Script 1 against original .ucs file
   - Navigate to script file location (or call out script via full path)
@@ -28,17 +28,17 @@ Execute Script 1 against original .ucs file
   - Script will also go through and will modify 'License.MaxCores' value to 8 for each Bigip.dat files
   - Script will also re-archive each file
   - At this point:
-    - Each device will have its own folder (<ucsname>_unpacked) , this can be safely removed
+    - Each device will have its own folder (/<ucsname>_unpacked) , this can be safely removed
     - Each device will have its own _updated ucs file , this will be kept
 
 Cleanup: Remove the 'unpacked' folder
   - Not needed - can be safely delted
 
 Optional (for less confusion) Move new .ucs to 'updated' folder.
-  - Example: Place .ucs files under <local-folder-root>\legacy_ucs_configs\<site>\updated
+  - Example: Place .ucs files under \<local-folder-root>/legacy_ucs_configs/\<site>/updated
 
 Optional (for working in a group) Upload new .ucs files to remote folder
-  - Example: Place .ucs files under <file-share-root>\legacy_ucs_configs\<site>\original
+  - Example: Place .ucs files under \<file-share-root>/legacy_ucs_configs/\<site>/original
 
 Load on new device (or lab for testing)
   - Ensure new device has a required license level
