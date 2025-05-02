@@ -75,12 +75,21 @@ def archive_ucs(bigip_conf_folder:str='support.qkview',file_extention_length:int
     print(f'Starting Creating of archive: "{path_of_new_ucs_file}" from "{bigip_conf_folder}"')
 
     # Create Archive
-    sub_comamnd = f'tar -czf "{path_of_new_ucs_file}" "{bigip_conf_folder}/"'
+    sub_comamnd = f'find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -'
     subprocess.run(sub_comamnd, shell=True)
+
+    # Address tar relative folder creation, use find and sed to deal with issue
+    # Credit to ideas in
+    # https://stackoverflow.com/questions/939982/how-do-i-tar-a-directory-of-files-and-folders-without-including-the-directory-it
+    # OPTION 1a: Deal with issue using GNU Find only Files (f) Links (l) and subdirectories (d) which should be good
+    # find "{bigip_conf_folder} \( -type f -o -type l -o -type d \) -printf "%P\n" | tar -czf {path_of_new_ucs_file} --no-recursion -C "{path_of_new_ucs_file}" -T -
+    # OPTION 2: Deal with issue using non-GNU Find and sed , using this method for now for better compatability, only Files (f) Links (l) and subdirectories (d) which should be good
+    # find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -
+    # OPTION 2b: Deal with issue using non-GNU Find and sed , using this method for now for better compatability, any type
+    # find "{bigip_conf_folder}"/ | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -
 
     # Archive Created
     print(f'Finished archive: {path_of_new_ucs_file}')
-
 
 if __name__ == "__main__":
     # Assign starting directory to recursivly work in
