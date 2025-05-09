@@ -38,6 +38,10 @@ TODO: Directly assist with merging.
 
 Assist with Re-Archiving.
 
+## F5 UCS workflows
+
+Similar to other F5 workflows, but focused on ucs based device migrations.
+
 ## Others
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -53,12 +57,14 @@ F5 Extract no snat configs and produce summary
 
 F5 Parse bigip.conf (normal and oneline) to dictionary format
 
+
 ## Authors
 Michael Johnson ([@samualblair](https://github.com/samualblair))
 
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.05.08 - Added ucs migration workflows and basic macos dot file removal
 * 2025.04.21 - BugFix - Enclosed filepath/name in quotes to allow for space and other special characters for workflow 1, workflow 2, and extract
 * 2025.04.17 - Added Script for extract, modify BigDB.dat, and re-archive script for workflow 2
 * 2025.04.15 - Added BigIP tmsh to Dictionary parsing script
