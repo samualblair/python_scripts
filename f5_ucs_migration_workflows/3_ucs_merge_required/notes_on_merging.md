@@ -19,6 +19,17 @@ And the resulting file:
 
 # Tricks when working with archives
 
+## When ready to load the UCS on a new platform
+
+* Use no-license , when the new system already is licensed and you are not tring to bring in a license file with the backup
+* Use the platform-migrate option, to allow proper loading on new hardware or VM
+* Use the keep-current-management-ip, to allow loading when a new management IP is already set and you don't want to lose it
+
+Example:
+```
+tmsh load sys ucs NEW-F5A.ucs no-license platform-migrate keep-current-management-ip
+```
+
 ## Linux
 
 * Not to much to worry about, will behave similar to F5 (which is a form of Red Hat Linux)
