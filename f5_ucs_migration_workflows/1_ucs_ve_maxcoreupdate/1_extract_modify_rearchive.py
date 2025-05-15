@@ -126,7 +126,9 @@ def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
             os.chmod(dirpath, S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH|S_IXUSR)
             for filename in filenames:
                 if os.path.islink(os.path.join(dirpath, filename)):
-                    print(f'Was a symlink: {filename}')
+                    # print(f'Was a symlink: {filename}')
+                    # No need to change symlink permissions
+                    pass
                 else:
                     os.chmod(os.path.join(dirpath, filename), S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH)
     recursive_chmod(bigip_ucs_extracted_folder)
@@ -271,16 +273,16 @@ if __name__ == "__main__":
             three_tries += 1
             print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
 
-    if three_tries > 3 and ask_if_transfer != "no":
+    if three_tries > 3 and ask_if_transfer != "no" and ask_if_transfer != "yes":
         print("Sorry to many incorrect responses, proceeding to skip file transfer")
 
     # Cleanup Extracted folders
     three_tries = 0
     while three_tries < 4:
         # Ask if user wants to cleanup (delete) all unpacked UCS files
-        ask_if_transfer = input('Do you want to Cleanup (delete) the unpacked files? If so type "yes" and if not then type "no" exactly)\n')
+        ask_if_cleanup = input('Do you want to Cleanup (delete) the unpacked files? If so type "yes" and if not then type "no" exactly)\n')
 
-        if ask_if_transfer == "yes":
+        if ask_if_cleanup == "yes":
             print('Starting Cleanups')
             # Iterate over files in the previous directories, Walk directory tree and record for later use
             for extracted_folder in extracted_folders_list:
@@ -289,7 +291,7 @@ if __name__ == "__main__":
             # Finish looping
             three_tries = 4
 
-        elif ask_if_transfer == "no":
+        elif ask_if_cleanup == "no":
             print("Skipping Cleanups")
             # Finish looping
             three_tries = 4
@@ -298,5 +300,5 @@ if __name__ == "__main__":
             three_tries += 1
             print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
 
-    if three_tries > 3 and ask_if_transfer != "no":
+    if three_tries > 3 and ask_if_cleanup != "no" and ask_if_cleanup != "yes":
         print("Sorry to many incorrect responses, proceeding to skip cleanup of unpacked folders")
