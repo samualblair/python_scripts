@@ -1,9 +1,10 @@
-# Created by: Michael Johnson - 04-21-2025
+# Created by: Michael Johnson - 05-15-2025
 # Parsing code to extract big-ip ucs, update bigdbdat file, and re-archive
 import os
+import errno
 import subprocess
 import configparser
-from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
+from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR, S_IXUSR
 
 def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> str:
     """
@@ -63,7 +64,7 @@ def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) 
         # This makes the file read only again (User, Group,)
         os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
 
-def archive_ucs(bigip_conf_folder:str='support.qkview',file_extention_length:int=9) -> None:
+def archive_ucs(bigip_conf_folder:str,file_extention_length:int=9) -> str:
     """
     Archives previously extracted files and folders from bigip archive (ucs, generic tar.gz) into a new ucs archive based on input folder path
     """
@@ -90,6 +91,77 @@ def archive_ucs(bigip_conf_folder:str='support.qkview',file_extention_length:int
 
     # Archive Created
     print(f'Finished archive: {path_of_new_ucs_file}')
+
+    return(path_of_new_ucs_file)
+
+def transfer_ucs(bigip_ucs:str,hostname_for_transfer:str,username_for_transfer:str) -> None:
+    """
+    Transfers ucs to remote device archive based on input file path
+    """
+
+    # New file name should be old path without '_unpacked' or -9 charachters, then add '_new.ucs' to end
+    bigip_ucs
+
+    # Inform User of Creation Start
+    print(f'Starting Transfer of archive: "{bigip_ucs}" with username "{username_for_transfer}"')
+
+    # Transfer ucs via scp
+    sub_comamnd = f'scp "{bigip_ucs}" "{username_for_transfer}@{hostname_for_transfer}://var/local/ucs/"'
+    subprocess.run(sub_comamnd, shell=True)
+
+    # Archive Created
+    print(f'Finshed Transfer of archive: "{bigip_ucs}"')
+
+def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
+    """
+    Removes unpacked ucs folder based on input folder path
+    """
+
+    # Inform User of Creation Start
+    print(f'Starting Removal of unpaked archive: "{bigip_ucs_extracted_folder}"')
+
+    # Make all files writable , include execute on directory, this will allow clean removal
+    def recursive_chmod(path):
+        for dirpath, dirnames, filenames in os.walk(path):
+            os.chmod(dirpath, S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH|S_IXUSR)
+            for filename in filenames:
+                if os.path.islink(os.path.join(dirpath, filename)):
+                    print(f'Was a symlink: {filename}')
+                else:
+                    os.chmod(os.path.join(dirpath, filename), S_IWUSR|S_IRUSR|S_IRGRP|S_IROTH)
+    recursive_chmod(bigip_ucs_extracted_folder)
+
+    # Alternative process to Ensure all files are writeable by user, for removal
+    # sub_comamnd = f'chmod -R u+w "{bigip_ucs_extracted_folder}"'
+    # subprocess.run(sub_comamnd, shell=True)
+
+    # Cleanup - Remove the files and folder
+    def recursiveremoval(path):
+        for dirpath, dirnames, filenames in os.walk(path):
+            for filename in filenames:
+                if os.path.islink(os.path.join(dirpath, filename)):
+                    # print(f'Was a symlink: {filename}')
+                    os.unlink(os.path.join(dirpath, filename))
+                else:
+                    if os.path.exists(os.path.join(dirpath, filename)):
+                        os.remove(os.path.join(dirpath, filename))
+                    else:
+                        print(f'Tried to delete file but does not exist - {os.path.join(dirpath, filename)}') 
+            for dirname in dirnames:
+                try:
+                    os.rmdir(os.path.join(dirpath, dirname))
+                except OSError as error:
+                    if error.errno is errno.ENOTEMPTY:
+                        recursiveremoval(os.path.join(dirpath, dirname))
+            os.rmdir(dirpath)
+    recursiveremoval(bigip_ucs_extracted_folder)
+
+    # Alternative process to Remove the files and folder with rm recursive
+    # sub_comamnd = f'rm -R "{bigip_ucs_extracted_folder}"'
+    # subprocess.run(sub_comamnd, shell=True)
+
+    # Archive Created
+    print(f'Removed: "{bigip_ucs_extracted_folder}"')
 
 if __name__ == "__main__":
     # Assign starting directory to recursivly work in
@@ -167,5 +239,64 @@ if __name__ == "__main__":
         print('Issue with file - ' + file_name)
 
     # Re-Archive in new UCS
+    new_ucs_list_list = []
     for folder_name in extracted_folders_list:
-        archive_ucs(folder_name)
+        new_ucs_list_list.append(archive_ucs(folder_name))
+    
+    # Transfer UCS to F5
+    three_tries = 0
+    while three_tries < 4:
+        # Ask if user wants to transfer all new UCS files
+        ask_if_transfer = input('Do you want to transfer the files? If so type "yes" and if not then type "no" exactly)\n')
+
+        if ask_if_transfer == "yes":
+            # Assign starting directory to recursivly work in
+            remote_f5_host = input('Please enter hostname or ip of remote f5 for file transfer )\n')
+            # Assign starting directory to recursivly work in
+            remote_f5_username = input('Please enter username of remote f5 for file transfer )\n')
+            print('You will be asked for the password each time, unless using ssh key authentication in which case no password prompt will be shown')
+            print('Transfers Starting')
+            for new_ucs in new_ucs_list_list:
+                transfer_ucs(new_ucs,remote_f5_host,remote_f5_username)
+            print('Transfers Finished')
+            # Finish looping
+            three_tries = 4
+
+        elif ask_if_transfer == "no":
+            print("Skipping file transfer")
+            # Finish looping
+            three_tries = 4
+       
+        else:
+            three_tries += 1
+            print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
+
+    if three_tries > 3 and ask_if_transfer != "no":
+        print("Sorry to many incorrect responses, proceeding to skip file transfer")
+
+    # Cleanup Extracted folders
+    three_tries = 0
+    while three_tries < 4:
+        # Ask if user wants to cleanup (delete) all unpacked UCS files
+        ask_if_transfer = input('Do you want to Cleanup (delete) the unpacked files? If so type "yes" and if not then type "no" exactly)\n')
+
+        if ask_if_transfer == "yes":
+            print('Starting Cleanups')
+            # Iterate over files in the previous directories, Walk directory tree and record for later use
+            for extracted_folder in extracted_folders_list:
+                cleanup_folder(extracted_folder)
+            print('Cleanups Finished')
+            # Finish looping
+            three_tries = 4
+
+        elif ask_if_transfer == "no":
+            print("Skipping Cleanups")
+            # Finish looping
+            three_tries = 4
+       
+        else:
+            three_tries += 1
+            print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
+
+    if three_tries > 3 and ask_if_transfer != "no":
+        print("Sorry to many incorrect responses, proceeding to skip cleanup of unpacked folders")
