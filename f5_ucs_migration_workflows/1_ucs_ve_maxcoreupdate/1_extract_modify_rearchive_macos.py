@@ -76,7 +76,7 @@ def archive_ucs(bigip_conf_folder:str,file_extention_length:int=9) -> str:
     print(f'Starting Creating of archive: "{path_of_new_ucs_file}" from "{bigip_conf_folder}"')
 
     # Create Archive
-    sub_comamnd = f'find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar --disable-copyfile -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -'
+    sub_comamnd = f'find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | grep -v -E "\\._|.DS_Store" | tar --disable-copyfile -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -'
     subprocess.run(sub_comamnd, shell=True)
 
     # Address tar relative folder creation, use find and sed to deal with issue
