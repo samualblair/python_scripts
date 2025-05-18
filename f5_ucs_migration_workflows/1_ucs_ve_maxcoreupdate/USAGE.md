@@ -50,8 +50,18 @@ Load on new device (or lab for testing)
 
 ## Usage Example for Script 1:
 ```bash
+# Original ucs files shown
+❯ ls -1 -R
+1_extract_modify_rearchive.py
+ucs_test
+
+./ucs_test:
+f5_1_backup.ucs
+f5_2_backup.ucs
+
 # run script , and call current folder
 python3.13 "1_extract_modify_rearchive.py"
+# Script will pause and ask you for folder to parse (recursivly)
 Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )
 ./
 # No Status is shown as extractions are happening
@@ -65,19 +75,48 @@ Starting Creating of archive: "./ucs_test/f5_1_backup_new.ucs" from "./ucs_test/
 Finished archive: ./ucs_test/f5_1_backup_new.ucs
 Starting Creating of archive: "./ucs_test/f5_2_backup_new.ucs" from "./ucs_test/f5_2_backup_unpacked"
 Finished archive: ./ucs_test/f5_2_backup_new.ucs
+
+# Script will pause and offer to transfer newly created ucs files to an F5 (into /var/local/ucs via scp)
+Do you want to transfer the files? If so type "yes" and if not then type "no" exactly
+yes
+Please enter hostname or ip of remote f5 for file transfer 
+127.0.0.1
+Please enter username of remote f5 for file transfer 
+user
+You will be asked for the password each time, unless using ssh key authentication in which case no password prompt will be shown
+Transfers Starting
+Starting Transfer of archive: "./ucs_test/f5_1_backup_new.ucs" with username "user"
+(user@127.0.0.1) Password:
+f5_1_backup_new.ucs                                                                                                                            100%   14MB  90.7MB/s   00:00
+Finshed Transfer of archive: "./ucs_test/f5_1_backup_new.ucs"
+Starting Transfer of archive: "./ucs_test/f5_2_backup_new.ucs" with username "user"
+(user@127.0.0.1) Password:
+f5_2_backup_new.ucs                                                                                                                            100%   10MB 144.9MB/s   00:00
+Finshed Transfer of archive: "./ucs_test/f5_2_backup_new.ucs"
+Transfers Finished
+
+# Script will then pause and ask you if you would like to cleanup unpacked files
+Do you want to Cleanup (delete) the unpacked files? If so type "yes" and if not then type "no" exactly)
+yes
+Starting Cleanups
+Starting Removal of unpaked archive: "./ucs_test/f5_1_backup_unpacked"
+Removed: "./ucs_test/f5_1_backup_unpacked"
+Starting Removal of unpaked archive: "./ucs_test/f5_2_backup_unpacked"
+Removed: "./ucs_test/f5_2_backup_unpacked"
+Cleanups Finished
 ❯
 
-# Does not currently remove the 'extracted folder' for you, so feel free to cleanup if not needed
+# Newly packed UCS files can be seen , in this example unpacked files were cleaned up.
+❯ ls -1 -R
+1_extract_modify_rearchive.py
+ucs_test
 
-# Newly packed UCS files can be seen , as well as 'extracted' folders (_unpacked)
-❯ ls -1 -l ucs_test
-total 122312
--rw-r--r--@ 1 michaelj  staff  15119032 Apr 17 12:22 f5_1_backup_new.ucs
-drwxr-xr-x@ 9 michaelj  staff       288 Apr 17 12:22 f5_1_backup_unpacked
--rwx------@ 1 michaelj  staff  15939632 Aug  7  2024 f5_1_backup.ucs
--rw-r--r--@ 1 michaelj  staff  15081087 Apr 17 12:22 f5_2_backup_new.ucs
-drwxr-xr-x@ 9 michaelj  staff       288 Apr 17 12:22 f5_2_backup_unpacked
--rw-r--r--@ 1 michaelj  staff  15076962 Aug  9  2024 f5_2_backup.ucs
-
+./ucs_test:
+f5_1_backup_new.ucs
+f5_1_backup.ucs
+f5_2_backup_new.ucs
+f5_2_backup.ucs
 ❯
+
+# Also remember, if transfers were done and succesful then files with _new.ucs are also located on the f5
 ```

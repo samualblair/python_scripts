@@ -64,6 +64,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2025.05.17 - Small output cleanup in ucs migration workflow, usage file updates
 * 2025.05.15 - Improved ucs migration workflows with file transfer and cleanup options
 * 2025.05.08 - Added ucs migration workflows and basic macos dot file removal
 * 2025.04.21 - BugFix - Enclosed filepath/name in quotes to allow for space and other special characters for workflow 1, workflow 2, and extract
