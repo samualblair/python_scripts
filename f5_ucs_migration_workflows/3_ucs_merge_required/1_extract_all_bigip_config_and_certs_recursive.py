@@ -11,13 +11,13 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
     """
     Extracts Config Files fand Certificates from bigip archive - qkview, ucs, generic tar.gz
     """
-    # subcomamnd = f'tar -tzf {bigip_conf_filename}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"'
+    # subcomamnd = f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
     # subprocess.run(subcomamnd)
-    # command_output = subprocess.run(f'tar -tzf {bigip_conf_filename}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"', shell=True)
+    # command_output = subprocess.run(f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"', shell=True)
     # print('this_is_file'+command_output)
 
     # Run shell commands to get test in byte form
-    config_files_sting_byte = subprocess.Popen(f'tar -tzf "{bigip_conf_filename}"| grep -E "bigip.conf|bigip_base.conf|/certificate_d/:|/certificate_key_d/:|BigDB.dat" | grep -v -E ".diffVersions|.bak|openvswitch|conf.sysinit|conf.default|defaults/|/bigpipe/"', shell=True, stdout=subprocess.PIPE).stdout.read()
+    config_files_sting_byte = subprocess.Popen(f'tar -tzf "{bigip_conf_filename}"| grep -E "bigip\\.conf|bigip_base\\.conf|/certificate_d/:|/certificate_key_d/:|BigDB.dat" | grep -v -E "\\.diffVersions|\\.bak|openvswitch|conf\\.sysinit|conf\\.default|defaults/|/bigpipe/"', shell=True, stdout=subprocess.PIPE).stdout.read()
 
     # Must convert byte recorded output into string output to use in normal string manner
     config_files_sting = config_files_sting_byte.decode('UTF-8')    
@@ -43,7 +43,7 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
     # with open(bigip_conf_filename, 'r') as archive_file:
     #     # subprocess.run(["ls", "-l"]) 
     #     print(archive_file)
-    #     # subcomamnd = f'tar -tzf {archive_file.name}| grep bigip.conf | grep -v -E ".diffVersions|.bak|openvswitch"'
+    #     # subcomamnd = f'tar -tzf {archive_file.name}| grep bigip.conf | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
     #     # subprocess.run(subcomamnd)
 
 
