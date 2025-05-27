@@ -12,7 +12,7 @@ def clean_macos_dot_files(base_foldername:str='host_ucs_v15_updated') -> None:
     """
     print(base_foldername)
     # Run shell commands to get test in byte form
-    config_files_sting_byte = subprocess.Popen(f'find "{base_foldername}" | grep "\._"', shell=True, stdout=subprocess.PIPE).stdout.read()
+    config_files_sting_byte = subprocess.Popen(f'find "{base_foldername}" | grep -E "\\._|\\.DS_Store"', shell=True, stdout=subprocess.PIPE).stdout.read()
     print(config_files_sting_byte)
     
     # Must convert byte recorded output into string output to use in normal string manner
