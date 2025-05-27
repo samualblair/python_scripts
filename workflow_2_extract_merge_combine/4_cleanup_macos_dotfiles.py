@@ -1,6 +1,5 @@
-# Created by: Michael Johnson - 04-21-2025
-# Code to remove all macos ._ files
-# May also just conisder bash/sh with one command: find . -name "\._*" -delete
+# Created by: Michael Johnson - 04-27-2025
+# Code to remove all MacOS ._ and DS_Store files
 
 import subprocess
 
@@ -8,27 +7,34 @@ import subprocess
 
 def clean_macos_dot_files(base_foldername:str='host_ucs_v15_updated') -> None:
     """
-    Find all the dotfiles and remove them
+    Find all the MacOS generated dotfiles "._" and ".DS_Store" files and remove them
     """
-    print(base_foldername)
-    # Run shell commands to get test in byte form
-    config_files_sting_byte = subprocess.Popen(f'find "{base_foldername}" | grep -E "\\._|\\.DS_Store"', shell=True, stdout=subprocess.PIPE).stdout.read()
-    print(config_files_sting_byte)
-    
+
+    config_files_sting = ""
+    # Run shell commands to get test in byte form , Note 'find' does not need to escape the period '.' character
+    config_files_sting_byte = subprocess.Popen(f'find "{base_foldername}" -name "._*"', shell=True, stdout=subprocess.PIPE).stdout.read()
     # Must convert byte recorded output into string output to use in normal string manner
-    config_files_sting = config_files_sting_byte.decode('UTF-8')    
-    print(config_files_sting)
-
-    # Parse out each line, but ignore the last charachter as it will just be a single new line
-    string_list = config_files_sting[0:len(config_files_sting)-1].split("\n")
-    print(string_list)
-
-    for config_tar_file_path in string_list:
-        # Run shell commands to get test in byte form
-        print (f'Removing: "{config_tar_file_path}"')
-        sub_comamnd = f'rm "{config_tar_file_path}"'
+    config_files_sting = config_files_sting_byte.decode('UTF-8')
+    # Only run delete if files are found
+    if config_files_sting != "":
+        print("Found and will remove these ._ files: \n" + config_files_sting)
+        sub_comamnd = f'find "{base_foldername}" -name "._*" -delete'
         subprocess.run(sub_comamnd, shell=True)
+    else:
+        print("No ._ files found")
 
+    config_files_sting = ""
+    # Run shell commands to get test in byte form , Note 'find' does not need to escape the period '.' character
+    config_files_sting_byte = subprocess.Popen(f'find "{base_foldername}" -name ".DS_Store"', shell=True, stdout=subprocess.PIPE).stdout.read()
+    # Must convert byte recorded output into string output to use in normal string manner
+    config_files_sting = config_files_sting_byte.decode('UTF-8')
+    # Only run delete if files are found
+    if config_files_sting != "":
+        print("Found and will remove these .DS_Store files: \n" + config_files_sting)
+        sub_comamnd = f'find "{base_foldername}" -name ".DS_Store" -delete'
+        subprocess.run(sub_comamnd, shell=True)
+    else:
+        print("No .DS_Store files found")
 
 if __name__ == "__main__":
     # assign directory
