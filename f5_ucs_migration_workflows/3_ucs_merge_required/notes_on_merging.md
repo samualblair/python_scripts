@@ -50,7 +50,10 @@ tmsh load sys ucs NEW-F5A.ucs no-license platform-migrate keep-current-managemen
 * Avoid when using tar: --disable-copyfile
   * Example: tar --disable-copyfile -czvf ../mergednew.ucs *
 
-A More complete example:
+# A More complete example:
+
+Start with unpacking each to-be-merged ucs.
+
 ```bash
 mkdir old-f5a_unpakced
 mkdir old-f503_unpakced
@@ -63,18 +66,76 @@ tar -xzvf old.ucs -C old-f501_unpakced
 # Extract priority base
 tar -xzvf old-f5a_unpakced -C new-f5a_unpakced
 
-# Rsync over files from filestore_temp
+# Rsync over files from filestore_temp. Note rsync exclude string needs to escape the period '.' character
 rsync -avh --progress --exclude='\._*' --exclude='\.DS_Store' ./old-f5a_unpakced/var/tmp/filestore_temp/ ./new-f5a_unpakced/var/tmp/filestore_temp
 rsync -avh --progress --exclude='\._*' --exclude='\.DS_Store' ./old-f503_unpakced/var/tmp/filestore_temp/ ./new-f5a_unpakced/var/tmp/filestore_temp
 rsync -avh --progress --exclude='\._*' --exclude='\.DS_Store' ./old-f501_unpakced/var/tmp/filestore_temp/ ./new-f5a_unpakced/var/tmp/filestore_temp
+```
 
-# Just to make sure check, and if needed remove . files
-find . -name '\._*'  
-find . -name '\._*' -delete
+Now, find source files that can be used for merge process, and concatenate (join) using cat to get started.
+
+```bash
+find . -name bigip.conf | grep -v -E "\.diffVersions|\.bak|openvswitch|conf\.sysinit|conf\.default|defaults/|/bigpipe/"
+find . -name bigip_base.conf | grep -v -E "\.diffVersions|\.bak|openvswitch|conf\.sysinit|conf\.default|defaults/|/bigpipe/"
+# find . -name BigDB.dat | grep -v -E "\.diffVersions|\.bak|openvswitch|conf\.sysinit|conf\.default|defaults/|/bigpipe/"
+
+# First file referenced will be first in new file - this should be the base or highest priority to keep with conflicts
+cat ./old-f5a_unpakced/config/bigip.conf ./old-f503_unpakced/config/bigip.conf ./old-f501_unpakced/config/bigip.conf > ./new-f5a_unpakced/config/bigip.conf
+cat ./old-f5a_unpakced/config/partitions/aci_partition/bigip.conf ./old-f503_unpakced/config/partitions/aci_partition/bigip.conf > ./new-f5a_unpakced/config/partitions/aci_partition/bigip.conf
+
+# Will need to repeate this process for each partition as well
+# First file referenced will be first in new file - this should be the base or highest priority to keep with conflicts
+cat ./uold-f5a_unpakced/config/bigip_base.conf ./old-f503_unpakced/config/bigip_base.conf ./old-f501_unpakced/config/bigip_base.conf > ./new-f5a_unpakced/config/bigip_base.conf
+cat ./old-f5a_unpakced/config/partitions/aci_partition/bigip_base.conf ./old-f503_unpakced/config/partitions/aci_partition/bigip_base.conf > ./new-f5a_unpakced/config/partitions/aci_partition/bigip_base.conf
+```
+
+Optionally, this is a good time to copy out into a working folder to edit, start a local git repo and use git to track changes. If you do just remember to copy back before rearchiving. Either way now is the time to finish editing the 'merge' conf files.
+
+```bash
+find ./new-f5a_unpakced/ -name bigip.conf | grep -v -E "\.diffVersions|\.bak|openvswitch|conf\.sysinit|conf\.default|defaults/|/bigpipe/"
+find ./new-f5a_unpakced/ -name bigip_base.conf | grep -v -E "\.diffVersions|\.bak|openvswitch|conf\.sysinit|conf\.default|defaults/|/bigpipe/"
+
+# May output something like
+./new-f5a_unpakced/config/bigip.conf
+./new-f5a_unpakced/config/partitions/aci_partition/bigip.conf
+./new-f5a_unpakced/config/bigip_base.conf
+./new-f5a_unpakced/config/partitions/aci_partition/bigip_base.conf
+
+# Can copy out to new folder with:
+mkdir working_git
+cp ./new-f5a_unpakced/config/bigip.conf ./working_git/common_bigip.conf 
+cp ./new-f5a_unpakced/config/partitions/aci_partition/bigip.conf ./working_git/aci_partition_bigip.conf 
+cp ./new-f5a_unpakced/config/bigip_base.conf ./working_git/common_bigip_base.conf 
+cp ./new-f5a_unpakced/config/partitions/aci_partition/bigip_base.conf ./working_git/aci_partition_bigip_base.conf 
+
+# Go into folder, start git repo, drop back, launch Visual Studio Code editor on that folder for easy editing
+cd working_git
+git init
+cd ..
+code ./working_git
+
+# After working on can copy updated files back with
+cp ./working_git/common_bigip.conf ./new-f5a_unpakced/config/bigip.conf
+cp ./working_git/aci_partition_bigip.conf ./new-f5a_unpakced/config/partitions/aci_partition/bigip.conf
+cp ./working_git/common_bigip_base.conf ./new-f5a_unpakced/config/bigip_base.conf
+cp ./working_git/aci_partition_bigip_base.conf ./new-f5a_unpakced/config/partitions/aci_partition/bigip_base.conf
+```
+
+When finished with edits , now it is time to rearchive (create the new UCS file)
+```bash
+# Just to make sure check, and if needed remove unwanted "._" and ".DS_Store" MacOS files. Note 'find' does not need to escape the period '.' character
+find . -name '._*'
+find . -name '._*' -delete
+find . -name '.DS_Store'
+find . -name '.DS_Store' -delete
 
 # Modify bigip.conf, bigip_base, Bigdb.dat, etc then when ready re-archive
 cd new-f5a_unpakced
-tar -czvf ../new-f5a.ucs *
+# CMD1: Exclude statement must be before -czvf. Note 'tar' exclude does not need to escape the period '.' character
+tar --disable-copyfile --exclude='._*' --exclude='.DS_Store' -czvf ../2025_05_16_f5a.ucs *
+
+# CMD 2: Alternative but equally valid method to create UCS
+find "merged_unpacked"/ -type f -o -type l -o -type d | sed s,^"merged_unpacked"/,, | grep -v -E "\._|\.DS_Store" | tar --disable-copyfile -czf "../new-f5a.ucs" --no-recursion -C "merged_unpacked"/ -T -
 
 # And copy to new F5
 scp ../new-f5a.ucs root@10.10.50.50://var/local/ucs/new-f5a.ucs
