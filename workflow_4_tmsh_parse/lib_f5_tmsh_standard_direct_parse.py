@@ -15,7 +15,9 @@ def parse_layer(tokens:list):
     DECLARATIVE_KEYS = ['disabled', 'internal', 'ip-forward', 'vlans-enabled', 'count', 
                         'socks4', 'socks4a', 'socks5', 'avg_tps', 'avg_request_throughput',
                         '__', 'errors', 'drop_count', 'total_attacks_count', 'events_count', 
-                        'acl_matches','total_count','psm_protocol_type','FTP', 'SMTP']
+                        'acl_matches','total_count','psm_protocol_type','FTP', 'SMTP',
+                        # GTM Parsing Additions
+                        'a', 'http', 'https', 'sip', 'smtp']
 
     result = {}
     is_key = True  # The first token will be a key
