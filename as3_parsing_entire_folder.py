@@ -23,7 +23,7 @@ try:
             as3_parsing_function.Update_schema(file_contents)
             total_vs_counted += as3_parsing_function.Count_vips(file_contents)
 
-except:
-    print('Issue with file - ' + file_name)
+except UnicodeDecodeError:
+    print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
 
 print(f'The total number of VS for folder are: {total_vs_counted}')

@@ -15,15 +15,34 @@ def parse_layer(tokens:list):
     DECLARATIVE_KEYS = ['disabled', 'internal', 'ip-forward', 'vlans-enabled', 'count', 
                         'socks4', 'socks4a', 'socks5', 'avg_tps', 'avg_request_throughput',
                         '__', 'errors', 'drop_count', 'total_attacks_count', 'events_count', 
-                        'acl_matches','total_count','psm_protocol_type','FTP', 'SMTP',
-                        # GTM Parsing Additions
-                        'a', 'http', 'https', 'sip', 'smtp']
+                        'acl_matches','total_count','psm_protocol_type','FTP', 'SMTP']
+    TMSH_TOP_LEVEL_KEYS = ['apm', 'asm', 'ltm']
+    TMSH_TWO_COMMANDS = ['apm aaa']
+    TMSH_THREE_COMMANDS = ['apm aaa active-directory']
 
     result = {}
     is_key = True  # The first token will be a key
     key = None
     while tokens:
         token = tokens.pop(0)
+
+        # if token in TMSH_TOP_LEVEL_KEYS:
+        #     print("MATCHED TOP LEVEL")
+        #     if (token + ' ' + tokens[0]) in TMSH_TWO_COMMANDS:
+        #         print("MATCHED TWO COMMANDS")
+        #     if (token + ' ' + tokens[0] + ' ' + tokens[1]) in TMSH_THREE_COMMANDS:
+        #         print("MATCHED THREE COMMANDS")
+
+        if token in TMSH_TOP_LEVEL_KEYS:
+            if (token + ' ' + tokens[0]) in TMSH_TWO_COMMANDS:
+                if (token + ' ' + tokens[0] + ' ' + tokens[1]) in TMSH_THREE_COMMANDS:
+                    #print("MATCHED THREE COMMANDS")
+                    #print(tokens)
+                    token = token + ' ' + tokens[0] + ' ' + tokens[1] + ' ' + tokens[2]
+                    tokens.pop(0)
+                    tokens.pop(0)
+                    tokens.pop(0)
+                    #print(tokens)
 
         if is_key:
             key = token
