@@ -1,0 +1,3 @@
+old_monitor_name,new_monitor_name
+https,http-2xx-or-4xx
+https_head_f5,http-2xx-or-4xx
