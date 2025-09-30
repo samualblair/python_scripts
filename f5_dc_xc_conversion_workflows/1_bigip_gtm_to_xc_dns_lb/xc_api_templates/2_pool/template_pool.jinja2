@@ -1,0 +1,38 @@
+{
+    "metadata": {
+        "name": "{{dnslb_pool_name}}",
+        "namespace": "system",
+        "labels": {},
+        "annotations": {},
+        "description": "",
+        "disable": false
+    },
+    "spec": {
+        "{{dnslb_pool_type}}": {
+            "members": [
+                {
+                    "ip_endpoint": "{{dnslb_pool_member_1_ip}}",
+                    "ratio": 1,
+                    "priority": 10,
+                    "disable": false,
+                    "name": "{{dnslb_pool_member_1_description}}"
+                },
+                {
+                    "ip_endpoint": "{{dnslb_pool_member_2_ip}}",
+                    "ratio": 1,
+                    "priority": 10,
+                    "disable": false,
+                    "name": "{{dnslb_pool_member_2_description}}"
+                }
+            ],
+            "health_check": {
+                "tenant": "{{long_tennat_id}}",
+                "namespace": "system",
+                "name": "{{dnslb_healthcheck_name}}"
+            },
+            "max_answers": 1
+        },
+        "load_balancing_mode": "PRIORITY",
+        "ttl": 30
+    }
+}

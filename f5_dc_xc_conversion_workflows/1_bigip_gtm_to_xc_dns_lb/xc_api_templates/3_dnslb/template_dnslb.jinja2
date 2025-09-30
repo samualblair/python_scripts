@@ -1,0 +1,65 @@
+{
+    "metadata": {
+        "name": "{{dnslb_instance_name}}",
+        "namespace": "system",
+        "labels": {},
+        "annotations": {},
+        "description": "",
+        "disable": false
+    },
+    "spec": {
+        "record_type": "A",
+        "rule_list": {
+            "rules": [
+                {
+                    "geo_location_set": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "all-of-north-america"
+                    },
+                    "pool": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "{{dnslb_pool_name}}"
+                    },
+                    "score": 100
+                },
+                {
+                    "geo_location_set": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "other-coutntires"
+                    },
+                    "pool": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "{{dnslb_pool_name}}"
+                    },
+                    "score": 100
+                },
+                {
+                    "geo_location_set": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "whole-world"
+                    },
+                    "pool": {
+                        "tenant": "{{long_tennat_id}}",
+                        "namespace": "system",
+                        "name": "{{dnslb_pool_name}}"
+                    },
+                    "score": 50
+                }
+            ]
+        },
+        "response_cache": {
+            "disable": null
+        },
+        "fallback_pool": {
+            "tenant": "{{long_tennat_id}}",
+            "namespace": "system",
+            "name": "{{dnslb_pool_name}}-fallback",
+            "kind": "dns_lb_pool"
+        }
+    }
+}

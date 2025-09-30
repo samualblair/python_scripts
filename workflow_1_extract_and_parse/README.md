@@ -133,7 +133,7 @@ Please enter folder name to parse all files within (HINT: may navigate back a fo
 ```
 
 ## Authors
-[Michael W Johnson](mailto:michael.johnson2@cdw.com)  ([@MichaelWJohnson-Mongoose](https://github.com/MichaelWJohnson-Mongoose))
+Michael Johnson ([@samualblair](https://github.com/samualblair))
 
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)

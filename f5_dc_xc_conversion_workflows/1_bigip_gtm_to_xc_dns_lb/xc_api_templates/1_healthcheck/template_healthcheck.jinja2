@@ -1,0 +1,17 @@
+{
+    "metadata": {
+        "name": "{{dnslb_healthcheck_name}}",
+        "namespace": "system",
+        "labels": {},
+        "annotations": {},
+        "description": "{{dnslb_healthcheck_description}}",
+        "disable": false
+    },
+    "spec": {
+        "https_health_check": {
+            "send": "{{dnslb_healthcheck_http_send_string}}",
+            "receive": "{{dnslb_healthcheck_http_receive_string}}",
+            "health_check_port": 443
+        }
+    }
+}

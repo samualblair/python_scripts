@@ -1,0 +1,15 @@
+{
+    "dns_zone_name": "{{dns_zone_name}}",
+    "group_name": "{{dns_zone_rr_group}}",
+    "rrset": {
+      "ttl": 3600, 
+      "lb_record": {
+        "name": "{{dns_zone_rr_record_name}}",
+        "value": {
+          "tenant": "{{long_tennat_id}}",
+          "namespace": "system",
+          "name": "{{dnslb_instance_name}}"
+        }
+      }
+    }
+  }
