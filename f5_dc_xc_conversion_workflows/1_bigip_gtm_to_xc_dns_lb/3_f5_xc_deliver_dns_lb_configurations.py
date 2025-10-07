@@ -8,7 +8,7 @@ import time
 # Use Python requests Library to send API calls
 import requests
 
-def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
+def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str, allow_replace:bool=False) -> None:
     """
     Takes JSON Configuraiton file and delivers to F5 DC (XC) SaaS Platform via REST API
     """
@@ -53,8 +53,14 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
             if f5xc_object_type == "1_healthcheck":
                 # Step 1 - Create healthchecks
                 print(f" F5 XC DNS - Creating Health Monitor - POST for: {f5xc_object_name}")
-                f5_xc_create_dns_lb_healthcheck(f5_xc_json_config_string)
+                received_code = f5_xc_create_dns_lb_healthcheck(f5_xc_json_config_string)
                 time.sleep(2)
+                # Attempt to replace if Authorized
+                if allow_replace and (received_code == 409):
+                    print(f" F5 XC DNS - Replacing Existing Health Monitor - PUT for: {f5xc_object_name}")
+                    f5_xc_replace_dns_lb_healthcheck(f5_xc_json_config_string,f5xc_object_name)
+                elif received_code == 409:
+                    print(f" F5 XC DNS - User did not Authorize Replacement For Existing Health Monitor: {f5xc_object_name}")
                 print(f" F5 XC DNS - Checking Health Monitor - GET for: {f5xc_object_name}")
                 f5_xc_get_dns_lb_healthcheck(f5xc_object_name)
                 time.sleep(2)
@@ -62,8 +68,14 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
             elif f5xc_object_type == "2_pool":
                 # Step 2 - Create Pools
                 print(f" F5 XC DNS - Creating DNS Pool - POST for: {f5xc_object_name}")
-                f5_xc_create_dns_lb_pool(f5_xc_json_config_string)
+                received_code = f5_xc_create_dns_lb_pool(f5_xc_json_config_string)
                 time.sleep(2)
+                # Attempt to replace if Authorized
+                if allow_replace and (received_code == 409):
+                    print(f" F5 XC DNS - Replacing Existing DNS Pool - PUT for: {f5xc_object_name}")
+                    f5_xc_replace_dns_lb_pool(f5_xc_json_config_string,f5xc_object_name)
+                elif received_code == 409:
+                    print(f" F5 XC DNS - User did not Authorize Replacement For Existing DNS Pool: {f5xc_object_name}")
                 print(f" F5 XC DNS - Checking DNS Pool - GET for: {f5xc_object_name}")
                 f5_xc_get_dns_lb_pool(f5xc_object_name)
                 time.sleep(2)
@@ -71,8 +83,14 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
             elif f5xc_object_type == "3_dnslb":
                 # Step 3 - Create DNS LB Instances
                 print(f" F5 XC DNS - Creating DNS LB - POST for: {f5xc_object_name}")
-                f5_xc_create_dns_lb_dnslb(f5_xc_json_config_string)
+                received_code = f5_xc_create_dns_lb_dnslb(f5_xc_json_config_string)
                 time.sleep(2)
+                # Attempt to replace if Authorized
+                if allow_replace and (received_code == 409):
+                    print(f" F5 XC DNS - Replacing Existing DNS LB - PUT for: {f5xc_object_name}")
+                    f5_xc_replace_dns_lb_dnslb(f5_xc_json_config_string,f5xc_object_name)
+                elif received_code == 409:
+                    print(f" F5 XC DNS - User did not Authorize Replacement For Existing DNS LB: {f5xc_object_name}")
                 print(f" F5 XC DNS - Checking DNS LB - GET for: {f5xc_object_name}")
                 f5_xc_get_dns_lb_dnslb(f5xc_object_name)
                 time.sleep(2)
@@ -81,6 +99,7 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
                 # Step 4 - Create DNS Records
                 print(f" F5 XC DNS - Creating DNS Record - POST for: {f5xc_dns_zone_rr_record_name}")
                 f5_xc_create_dns_lb_rrecord(f5_xc_json_config_string, f5xc_dns_zone_name, f5xc_dns_zone_rr_group)
+                # TODO: Look into DNS Record Replacement
                 time.sleep(2)
                 print(f" F5 XC DNS - Checking DNS Record - GET for: {f5xc_dns_zone_rr_record_name}")
                 f5_xc_get_dns_lb_rrecord(f5xc_dns_zone_name, f5xc_dns_zone_rr_group, f5xc_dns_zone_rr_record_name, f5xc_dns_zone_rr_get_type)
@@ -91,7 +110,7 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str) -> None:
 
 
 
-def f5_xc_create_dns_lb_healthcheck(f5_xc_json:str) -> None:
+def f5_xc_create_dns_lb_healthcheck(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Healthcheck
     Takes configuration json
@@ -116,6 +135,39 @@ def f5_xc_create_dns_lb_healthcheck(f5_xc_json:str) -> None:
         response = requests.request(
             "POST", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
 
+    if response.status_code == 409:
+        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
+    else:    
+        print(f"The response code was: {response.status_code}")
+    # print(response.text)
+
+    return(response.status_code)
+
+def f5_xc_replace_dns_lb_healthcheck(f5_xc_json:str,f5xc_object_name:str) -> None:
+    """
+    Creates XC DNS-LB Healthcheck
+    Takes configuration json
+    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    """
+    
+    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
+    payload = f5_xc_json
+
+    headers = {
+    'Content-Type': 'application/json'
+    }
+
+    response = requests.request(
+        "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
+    if response.status_code == 429:
+        print(f"Hitting Rate Limits due to response code was: {response.status_code}")
+        print("Waiting 10 sec...")
+        time.sleep(10)
+        print("Continuing...and Trying Again")
+        response = requests.request(
+            "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
     print(f"The response code was: {response.status_code}")
     # print(response.text)
 
@@ -129,10 +181,7 @@ def f5_xc_get_dns_lb_healthcheck(f5xc_object_name:str) -> None:
     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
-    if response.status_code == 409:
-        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
-    else:    
-        print(f"The response code was: {response.status_code}")
+    print(f"The response code was: {response.status_code}")
     # print(response.text)
 
     # To load response as object
@@ -140,7 +189,7 @@ def f5_xc_get_dns_lb_healthcheck(f5xc_object_name:str) -> None:
     # Then to print back as formated string
     # json_string = json.dumps(json_dict, indent=4)
 
-def f5_xc_create_dns_lb_pool(f5_xc_json:str) -> None:
+def f5_xc_create_dns_lb_pool(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
@@ -165,6 +214,39 @@ def f5_xc_create_dns_lb_pool(f5_xc_json:str) -> None:
         response = requests.request(
             "POST", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
 
+    if response.status_code == 409:
+        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
+    else:    
+        print(f"The response code was: {response.status_code}")
+    # print(response.text)
+
+    return(response.status_code)
+
+def f5_xc_replace_dns_lb_pool(f5_xc_json:str,f5xc_object_name:str) -> None:
+    """
+    Creates XC DNS-LB Pool
+    Takes configuration json
+    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    """
+    
+    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
+    payload = f5_xc_json
+
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    
+    response = requests.request(
+        "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
+    if response.status_code == 429:
+        print(f"Hitting Rate Limits due to response code was: {response.status_code}")
+        print("Waiting 10 sec...")
+        time.sleep(10)
+        print("Continuing...and Trying Again")
+        response = requests.request(
+            "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
 
     print(f"The response code was: {response.status_code}")
     # print(response.text)
@@ -179,10 +261,7 @@ def f5_xc_get_dns_lb_pool(f5xc_object_name:str) -> None:
     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
-    if response.status_code == 409:
-        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
-    else:    
-        print(f"The response code was: {response.status_code}")
+    print(f"The response code was: {response.status_code}")
     # print(response.text)
 
     # To load response as object
@@ -191,7 +270,7 @@ def f5_xc_get_dns_lb_pool(f5xc_object_name:str) -> None:
     # json_string = json.dumps(json_dict, indent=4)
 
 
-def f5_xc_create_dns_lb_dnslb(f5_xc_json:str) -> None:
+def f5_xc_create_dns_lb_dnslb(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
@@ -216,6 +295,39 @@ def f5_xc_create_dns_lb_dnslb(f5_xc_json:str) -> None:
         response = requests.request(
             "POST", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
 
+    if response.status_code == 409:
+        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
+    else:    
+        print(f"The response code was: {response.status_code}")
+    # print(response.text)
+
+    return(response.status_code)
+
+def f5_xc_replace_dns_lb_dnslb(f5_xc_json:str,f5xc_object_name:str) -> None:
+    """
+    Creates XC DNS-LB Pool
+    Takes configuration json
+    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    """
+
+    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
+    payload = f5_xc_json
+
+    headers = {
+    'Content-Type': 'application/json'
+    }
+    
+    response = requests.request(
+        "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
+    if response.status_code == 429:
+        print(f"Hitting Rate Limits due to response code was: {response.status_code}")
+        print("Waiting 10 sec...")
+        time.sleep(10)
+        print("Continuing...and Trying Again")
+        response = requests.request(
+            "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
     print(f"The response code was: {response.status_code}")
     # print(response.text)
 
@@ -229,10 +341,7 @@ def f5_xc_get_dns_lb_dnslb(f5xc_object_name:str) -> None:
     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
-    if response.status_code == 409:
-        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
-    else:    
-        print(f"The response code was: {response.status_code}")
+    print(f"The response code was: {response.status_code}")
     # print(response.text)
 
     # To load response as object
@@ -241,7 +350,7 @@ def f5_xc_get_dns_lb_dnslb(f5xc_object_name:str) -> None:
     # json_string = json.dumps(json_dict, indent=4)
 
 
-def f5_xc_create_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str) -> None:
+def f5_xc_create_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str) -> int:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
@@ -266,8 +375,42 @@ def f5_xc_create_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns
         response = requests.request(
             "POST", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
 
-    print(f"The response code was: {response.status_code}")
+    if response.status_code == 409:
+        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
+    else:    
+        print(f"The response code was: {response.status_code}")
     # print(response.text)
+
+    return(response.status_code)
+
+# TODO: Test further
+# def f5_xc_replace_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str,  f5xc_dns_zone_rr_record_name:str, f5xc_dns_zone_rr_get_type:str) -> None:
+#     """
+#     Creates XC DNS-LB Pool
+#     Takes configuration json
+#     Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+#     """
+    
+#     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
+#     payload = f5_xc_json
+
+#     headers = {
+#     'Content-Type': 'application/json'
+#     }
+    
+#     response = requests.request(
+#         "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+    
+#     if response.status_code == 429:
+#         print(f"Hitting Rate Limits due to response code was: {response.status_code}")
+#         print("Waiting 10 sec...")
+#         time.sleep(10)
+#         print("Continuing...and Trying Again")
+#         response = requests.request(
+#             "PUT", url, headers=headers, data=payload, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
+
+#     print(f"The response code was: {response.status_code}")
+#     # print(response.text)
 
 def f5_xc_get_dns_lb_rrecord(f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str, f5xc_dns_zone_rr_record_name:str, f5xc_dns_zone_rr_get_type:str) -> None:
     """
@@ -278,11 +421,8 @@ def f5_xc_get_dns_lb_rrecord(f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str,
 
     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
-    
-    if response.status_code == 409:
-        print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
-    else:    
-        print(f"The response code was: {response.status_code}")
+      
+    print(f"The response code was: {response.status_code}")
     # print(response.text)
 
     # To load response as object
@@ -311,33 +451,33 @@ if __name__ == "__main__":
     # f5xc_object_type_chosen = "4_records"
     f5xc_object_type_chosen = input('Please Enter Type (all or test , 1_healthcheck , 2_pool , 3_dnslb , 4_records ) \n')
 
+    allow_replacement = input('Are Replacements Allowed? (y/n): ').lower().startswith('y')
+    if allow_replacement:
+        print("Allowing Replacements if Objects Already Exist")
+    else:
+        print("Will not allow a Replacement if Object Already Exists")
+
     print('Expecting a folder with these files (unencrypted) - private_key_file.pem , public_cert_file.pem, console-ves-volterra-io-chain.pem\n')
     base_cert_directory = input('Please enter folder with certificates, and no trailing "/" (HINT: may navigate back a folder with ../FOLDERNAME )\n')
     client_key_location = f'{base_cert_directory}/private_key_file.pem'
     client_cert_location = f'{base_cert_directory}/public_cert_file.pem'
     server_cert_ca_location = f'{base_cert_directory}/console-ves-volterra-io-chain.pem'
+    # client_key_location = input('Please enter an Full path to Client cert private key \n')
+    # client_cert_location = input('Please enter an Full path to Client cert public key \n')
+    # server_cert_ca_location = input('Please enter an Full path to Server CA or trust chain \n')
     # client_key_location = '/folder/path/certs/private_key_file.pem'
     # client_cert_location = '/folder/path/certs/public_cert_file.pem'
     # server_cert_ca_location ='/folder/path/certs/console-ves-volterra-io-chain.pem'
+    # TODO: Add support for encrypted client key
     #client_key_pass = input('Client Key Decryption Password\n')
     
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
-    # directory = './jinja_test'
     # directory = "./jinja_rendered"
     # directory = "retry"
 
     f5xc_tennant_short_id = input('Please enter Short Tennant ID such as: exampletennant\n')
     f5xc_tennant_long_id = input('Please enter Long Tennant ID such as: exampletennant-longid \n')
     f5xc_namespace = input('Please enter namespace - For DNS-LB it should be: system \n')
-    # f5xc_tennant_short_id = "exampletennant"
-    # f5xc_tennant_long_id = "exampletennant-longid"
-    # f5xc_namespace = "system"
-    # client_key_location = input('Please enter an Full path to Client cert private key \n')
-    # client_cert_location = input('Please enter an Full path to Client cert public key \n')
-    # server_cert_ca_location = input('Please enter an Full path to Server CA or trust chain \n')
-
-    # TODO: Add support for encrypted client key
-    # client_key_pass = input('Client Key Decryption Password\n')
 
     # Walk directory tree and record for later use
     recursive_folder_list = []
@@ -347,7 +487,6 @@ if __name__ == "__main__":
     recursive_lists_dict["recursive_folder_list_2_pool"] = []
     recursive_lists_dict["recursive_folder_list_3_dnslb"] = []
     recursive_lists_dict["recursive_folder_list_4_records"] = []
-
 
     if (f5xc_object_type_chosen == "test"):
         pass
@@ -394,7 +533,6 @@ if __name__ == "__main__":
         #             except UnicodeDecodeError:
         #                 print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
 
-
         # # All expected folders - in order
 
         # Test Connection to F5 XC
@@ -411,7 +549,7 @@ if __name__ == "__main__":
                         try:
                             # Only try to parse file if it is name ends with .json
                             if file_name[-5:] == ".json":
-                                f5_xc_deliver_configs(file_contents, "1_healthcheck")
+                                f5_xc_deliver_configs(file_contents, "1_healthcheck", allow_replacement)
                                 # print(f"Found {file_name} as type 1_healthcheck")
                         # Catch when file is not parsable UTF 8 or similar
                         except UnicodeDecodeError:
@@ -427,7 +565,7 @@ if __name__ == "__main__":
                         try:
                             # Only try to parse file if it is name ends with .json
                             if file_name[-5:] == ".json":
-                                f5_xc_deliver_configs(file_contents, "2_pool")
+                                f5_xc_deliver_configs(file_contents, "2_pool", allow_replacement)
                                 # print(f"Found {file_name} as type 2_pool")
                         # Catch when file is not parsable UTF 8 or similar
                         except UnicodeDecodeError:
@@ -443,7 +581,7 @@ if __name__ == "__main__":
                         try:
                             # Only try to parse file if it is name ends with .json
                             if file_name[-5:] == ".json":
-                                f5_xc_deliver_configs(file_contents, "3_dnslb")
+                                f5_xc_deliver_configs(file_contents, "3_dnslb", allow_replacement)
                                 # print(f"Found {file_name} as type 3_dnslb")
                         # Catch when file is not parsable UTF 8 or similar
                         except UnicodeDecodeError:
@@ -459,7 +597,7 @@ if __name__ == "__main__":
                         try:
                             # Only try to parse file if it is name ends with .json
                             if file_name[-5:] == ".json":
-                                f5_xc_deliver_configs(file_contents, "4_records")
+                                f5_xc_deliver_configs(file_contents, "4_records", allow_replacement)
                                 # print(f"Found {file_name} as type 4_records")
                         # Catch when file is not parsable UTF 8 or similar
                         except UnicodeDecodeError:
