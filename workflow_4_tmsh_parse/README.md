@@ -7,17 +7,17 @@ Convert to JSON for easier parsing.
 
 ## Work in progress but initial options are:
 
-### Option 1 - very functinoal for gtm, somewhat functional for other modules
+### Option 1 - very functional for gtm, somewhat functional for other modules
 * run '1_f5_tmsh_to_json_dict_using_convert_lib' , That calls 'lib_f5_tmsh_standard_direct_parse' an produces an output conversion in json (set of configuration objects with key-value pairs)
 * Use this file as needed
 
-### Option 2 - very functinoal for gtm , still in progress for tlm
+### Option 2 - very functional for gtm , still in progress for tlm
 * run '1_f5_tmsh_to_json_dict_using_convert_lib' , That calls 'lib_f5_tmsh_standard_direct_parse' an produces an output conversion in json (set of configuration objects with key-value pairs)
 * run a follow-up script for GTM, LTM, or other
   * For GTM - '2_bigip_gtm_to_f5dc_xc_conversion' 
     * This starts by processing and converts GTM configuration into a dictionary that is organized by object name (GMT related objects) - also can save as json export (custom)
     * This continues by converting into a format for F5 DC (XC) , generating F5 XC API based JSON Configurations
-    * Currently Requires - Jinja2 , looking to seperate that out as optional requirement
+    * Currently Requires - Jinja2 , looking to separate that out as optional requirement
   * For LTM - 'bigip_ltm_to_object_name_conversion' 
     * This starts by processing and converts LTM configuration into a dictionary that is organized by object name (LTM related objects) - also can save as json export (custom)
   * Deliver or Build Reports from Data

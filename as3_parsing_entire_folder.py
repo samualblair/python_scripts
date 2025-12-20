@@ -3,7 +3,7 @@
 
 # import required module
 import os
-import as3_parsing_function as as3_parsing_function
+import lib_as3_parsing_function as lib_as3_parsing_function
 
 # assign directory
 # directory = 'LB01'
@@ -17,11 +17,11 @@ try:
         file_contents = os.path.join(directory, file_name)
         # checking if it is a file
         if os.path.isfile(file_contents):
-            as3_parsing_function.Add_pool_service_port(file_contents)
-            as3_parsing_function.Update_vip_ip(file_contents)
-            as3_parsing_function.Update_tenant_name(file_contents)
-            as3_parsing_function.Update_schema(file_contents)
-            total_vs_counted += as3_parsing_function.Count_vips(file_contents)
+            lib_as3_parsing_function.Add_pool_service_port(file_contents)
+            lib_as3_parsing_function.Update_vip_ip(file_contents)
+            lib_as3_parsing_function.Update_tenant_name(file_contents)
+            lib_as3_parsing_function.Update_schema(file_contents)
+            total_vs_counted += lib_as3_parsing_function.Count_vips(file_contents)
 
 except UnicodeDecodeError:
     print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
