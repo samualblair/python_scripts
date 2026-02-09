@@ -42,6 +42,10 @@ Assist with Re-Archiving.
 
 Similar to other F5 workflows, but focused on ucs based device migrations.
 
+## F5 - Netscaler to F5 Migration workflows
+
+Similar to other F5 workflows, but focused on using F5 Flipper or similar tool to convert from NS to BIG-IP using AS3 based configurations.
+
 ## Others
 [![python-version](https://img.shields.io/badge/python-3.13.1-blue)](https://www.python.org/downloads/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -64,6 +68,8 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2026.02.09 - BugFix in as3 parsing function - app and tenant name adjustments now accounts for already updated names - also refactored to look for _app instead of -app
+* 2025.12.20 - Added NS to BIG-IP workflows
 * 2025.04.27 - BugFix - Added additional escaping fixes - refactored cleanup script around find for workflow 2 and ucs workflows
 * 2025.05.17 - Small output cleanup in ucs migration workflow, usage file updates
 * 2025.05.15 - Improved ucs migration workflows with file transfer and cleanup options

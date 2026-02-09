@@ -1,4 +1,4 @@
-# Michael W. Johnson - 12-20-2025
+# Michael W. Johnson - 02-09-2026
 # Paring code to parse existing AS3 JSON file and filter or modify information
 # This code Specifically provides a function to parse through AS3 JSON and perform tasks and saving in well formatted JSON when done
 # One task is to find missing Service Port (member port) information, and add a service port based on Virtual Port (VS Port).
@@ -13,6 +13,8 @@ virtual_port_dict = {}
 # in_filename = 'example_bad_as3.json'
 # output_filename = 'new_fixed_output.json'
 # output_filename = 'new_no_change_output.json'
+
+# TODO: Add tool to convert from 'declaration' from 'non-declaration' formatted json file
 
 def Add_pool_service_port(in_filename) -> None:
     '''
@@ -231,21 +233,25 @@ def Update_tenant_name(in_filename) -> None:
                                 # name_of_application = source['declaration'][dec_key][tenant_key][application_key]
                                 # class_of_application = source['declaration'][dec_key][tenant_key][application_key]['class']
 
-                                # Check if app name ends with '-app' or not, only run if it does
-                                if '-app' == tenant_key[-4:]:
-                                    #print('a match')
+                                # TODO: change key from looking for app_ to looking for proper class of an application - "class": "Application"
 
-                                    # Construct new name, by replacing (lb_) with (t_), simply by dropping first letter 3 characters of name, and ignore ending 4 (-app)
-                                    # Current logic loop will do this for all apps, so only last app name remains
-                                    new_tenant_name = 't_' + tenant_key[3:-4]
+                                # Check if app name starts with 'app_' or not, only run if it does
+                                if 'app_' == tenant_key[0:4]:
+                                    # Construct tenant new name, by using app name but replacing (app_) with (t_)
+                                    # Current logic loop will do this for all apps, so only last app name remains in tenant name
+                                    new_tenant_name = 't_' + tenant_key[4:]
                                     destination['declaration'][new_tenant_name] = source['declaration'][dec_key]
-                                    destination['declaration'].pop(dec_key)
+                                    # Only pop the old tenant name if the new tenant name is different - very important check as this loop is only filtering in on application
+                                    if not (new_tenant_name == dec_key):
+                                        destination['declaration'].pop(dec_key)
 
-                                    # Construct new name, by replacing (lb_) with (a_), simply by dropping first letter 3 characters of name, and ignore ending 4 (-app)
-                                    # Current logic loop will do this for all apps, so only last app name remains
-                                    new_app_name = 'a_' + tenant_key[3:-4]
-                                    destination['declaration'][new_tenant_name][new_app_name] = source['declaration'][dec_key][tenant_key]
-                                    destination['declaration'][new_tenant_name].pop(tenant_key)
+                                    # This section replaces app_ with a_ , disabling by default as this is to compressed and not descriptive enough
+                                    # # Construct new name app name, by replacing (app_) with (a_)
+                                    # new_app_name = 'a_' + tenant_key[4:]
+                                    # destination['declaration'][new_tenant_name][new_app_name] = source['declaration'][dec_key][tenant_key]
+                                    # # Only pop the old app name if the new app name is different - should not be needed when app name explicitly changing - but leaving here as backup check
+                                    # if not (new_app_name == tenant_key):
+                                    #     destination['declaration'][new_tenant_name].pop(tenant_key)
 
                             except TypeError:
                                 pass
