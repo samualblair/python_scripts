@@ -61,6 +61,7 @@ F5 Extract no snat configs and produce summary
 
 F5 Parse bigip.conf (normal and oneline) to dictionary format
 
+Apstra Update cable map JSON from updated cable map CSV file
 
 ## Authors
 Michael Johnson ([@samualblair](https://github.com/samualblair))
@@ -68,6 +69,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2026.02.24 - Added Apstra Cable Map update helper - create json updated file using an updated csv file
 * 2026.02.09 - BugFix in as3 parsing function - app and tenant name adjustments now accounts for already updated names - also refactored to look for _app instead of -app
 * 2025.12.20 - Added NS to BIG-IP workflows
 * 2025.04.27 - BugFix - Added additional escaping fixes - refactored cleanup script around find for workflow 2 and ucs workflows
