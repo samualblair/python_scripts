@@ -1,4 +1,4 @@
-# Michael W. Johnson - 7-26-2024
+# Michael W. Johnson - 03-04-2026
 # Paring code to parse existing Files in a folder, and call AS3 parsing JSON function on each of those files.
 
 # import required module
@@ -21,6 +21,7 @@ try:
             lib_as3_parsing_function.Update_vip_ip(file_contents)
             lib_as3_parsing_function.Update_tenant_name(file_contents)
             lib_as3_parsing_function.Update_schema(file_contents)
+            lib_as3_parsing_function.Clean_up_node_names(file_contents)
             total_vs_counted += lib_as3_parsing_function.Count_vips(file_contents)
 
 except UnicodeDecodeError:

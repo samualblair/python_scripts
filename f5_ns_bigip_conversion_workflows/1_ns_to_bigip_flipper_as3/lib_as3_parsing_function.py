@@ -1,4 +1,4 @@
-# Michael W. Johnson - 02-09-2026
+# Michael W. Johnson - 03-04-2026
 # Paring code to parse existing AS3 JSON file and filter or modify information
 # This code Specifically provides a function to parse through AS3 JSON and perform tasks and saving in well formatted JSON when done
 # One task is to find missing Service Port (member port) information, and add a service port based on Virtual Port (VS Port).
@@ -338,6 +338,159 @@ def Count_vips(in_filename) -> None:
     else:
         return(count_dic)
 
+def Clean_up_node_names(in_filename) -> None:
+    '''
+    Parses F5 AS3 JSON File, looks for common issues in Node Names and cleans them up
+    This is destructive of original file, please backup file prior to running.
+    '''
+
+    with open(in_filename, 'r') as vars_file:
+        source = json.load(vars_file)
+
+        for dec_key in source['declaration']:
+            # print(source['declaration'][i])
+            try:
+                for tenant_key in source['declaration'][dec_key]:
+                    try:
+                       
+                        for application_key in source['declaration'][dec_key][tenant_key]:
+
+                            # Try to find the Current Service Port
+                            try:
+                                # name_of_application = source['declaration'][dec_key][tenant_key][application_key]
+                                class_of_application = source['declaration'][dec_key][tenant_key][application_key]['class']
+                                
+                                # if class_of_application == "Service_HTTP":
+                                #     apps_found.append(class_of_application)
+
+                                if class_of_application == 'Pool':
+                                    # Catch when a Pool
+                                    new_pool_members = []
+                                    # len_of_pool = len(source['declaration'][dec_key][tenant_key][application_key]['members'])
+                                    
+                                    for pool_member in source['declaration'][dec_key][tenant_key][application_key]['members']:
+                                        # Nothing to do if just IPs - 'serverAddresses' - list of IP strings
+                                        # Try when 'servers' - list of objects, with name and address values
+
+                                        #print(pool_member)
+
+                                        new_pool_member_servers = []
+
+                                        try:
+                                            for pool_member_server in pool_member['servers']:
+
+                                                #print(pool_member_server)
+                                                old_server_name = str(pool_member_server['name'])
+                                                #string_old_server_name = 'OLD Node Server Name:' + str(pool_member_server['name'])
+                                                #print(string_old_server_name)
+
+                                                string_new_server_name = old_server_name
+                                                
+                                                # Remove common cases of suffixes/prefixes with Tenant Name (dec_key) or App Name (tenant_key)
+                                                string_removal = dec_key + ' '
+                                                string_new_server_name = string_new_server_name.removeprefix(string_removal)
+                                                string_removal = ' ' + dec_key
+                                                string_new_server_name = string_new_server_name.removesuffix(string_removal)
+                                                # Catch if name matches other without t_
+                                                if len(dec_key) > 2:
+                                                     if dec_key[:2] == 't_':
+                                                        string_removal = dec_key[2:] + ' '
+                                                        string_new_server_name = string_new_server_name.removeprefix(string_removal)
+                                                        string_removal = ' ' + dec_key[2:]
+                                                        string_new_server_name = string_new_server_name.removesuffix(string_removal)
+
+                                                string_removal = tenant_key + ' '
+                                                string_new_server_name = string_new_server_name.removeprefix(string_removal)
+                                                string_removal = ' ' + tenant_key
+                                                string_new_server_name = string_new_server_name.removesuffix(string_removal)
+                                                # Catch if name matches other without app_
+                                                if len(tenant_key) > 4:
+                                                    if tenant_key[4:] == 'app_':
+                                                        string_removal = tenant_key[4:] + ' '
+                                                        string_new_server_name = string_new_server_name.removeprefix(string_removal)
+                                                        string_removal = ' ' + tenant_key[4:]
+                                                        string_new_server_name = string_new_server_name.removesuffix(string_removal)
+
+                                                # TODO: Move or expand this section this number section to some list - maybe an importable csv or something
+                                                # Remove common cases of suffixes/prefixes with port numbers
+                                                string_new_server_name = string_new_server_name.removesuffix(' 443')
+                                                string_new_server_name = string_new_server_name.removesuffix(' 80')
+                                                string_new_server_name = string_new_server_name.removesuffix(' 8080')
+                                                string_new_server_name = string_new_server_name.removesuffix(' 8443')
+                                                string_new_server_name = string_new_server_name.replace(' 443 ','')
+                                                string_new_server_name = string_new_server_name.replace(' 80 ','')
+                                                string_new_server_name = string_new_server_name.replace(' 8080 ','')
+                                                string_new_server_name = string_new_server_name.replace(' 8443 ','')
+                                                string_new_server_name = string_new_server_name.replace('443 ','')
+                                                string_new_server_name = string_new_server_name.replace('80 ','')
+                                                string_new_server_name = string_new_server_name.replace('8080 ','')
+                                                string_new_server_name = string_new_server_name.replace('8443 ','')
+
+                                                # Remove common cases of spacing and dividers
+                                                string_new_server_name = string_new_server_name.replace(' - ','-')
+                                                string_new_server_name = string_new_server_name.replace(' -','-')
+                                                string_new_server_name = string_new_server_name.replace('- ','-')
+                                                # Final catch any remaining spacing
+                                                string_new_server_name = string_new_server_name.replace(' ','-')
+                                                string_new_server_name = string_new_server_name.removeprefix('-')
+                                                string_new_server_name = string_new_server_name.removesuffix('-')
+
+                                                # No need to update if name hasn't changed
+                                                if old_server_name != string_new_server_name:
+                                                    print("Found - Attempting to Swap Node Server Name")
+                                                    print(old_server_name + ' -> ' + string_new_server_name)
+                                                    # Update the address to the new value, from lookup of old/new dictionary
+                                                    pool_member_server['name'] = string_new_server_name
+                                                new_pool_member_servers.append(pool_member_server)
+
+                                        except KeyError:
+                                            # Catch if no server Name present
+                                            print("Exception on Server Name Swap: " + class_of_application)
+                                            pass
+
+                                        # Sanity Check before update
+                                        if len(pool_member['servers']) == len(new_pool_member_servers):
+                                            # Done parsing 'servers' so update object in the members list
+                                            pool_member['servers'] = new_pool_member_servers
+                                            # Append to updated members list
+                                            new_pool_members.append(pool_member)
+                                        else:
+                                            print("Failed to update Servers list inside Member list of pool for: " + source['declaration'][dec_key][tenant_key][application_key])
+                                            pass
+
+                                    # Sanity Check before update
+                                    if len(source['declaration'][dec_key][tenant_key][application_key]['members']) == len(new_pool_members):
+                                        source['declaration'][dec_key][tenant_key][application_key]['members'] = new_pool_members
+                                    else:
+                                        print("Failed to update Node Names in: " + source['declaration'][dec_key][tenant_key][application_key])
+                                        pass
+
+                            except TypeError:
+                                pass
+                            except KeyError:
+                                pass
+                    except TypeError:
+                        pass
+                    except KeyError:
+                        pass
+            except TypeError:
+                pass
+            except KeyError:
+                pass
+            except Exception as error:
+                print(type(error).__name__)
+                print(error)
+
+    # output_filename = str(in_filename + '_updated.json')
+    output_filename = str(in_filename)
+
+    with open(output_filename, "w") as outfile: 
+        json.dump(source, outfile, indent=2)
+
+# TODO: Remove SA if just enabled
+
+# TODO: Update name of TCP profile if just timeout change
+
 
 if __name__ == "__main__":
     # Testing with single file run as script rather than imported function
@@ -346,3 +499,4 @@ if __name__ == "__main__":
     Update_tenant_name('example_good_as3.json')
     Update_schema('example_good_as3.json')
     Count_vips('example_good_as3.json')
+    Clean_up_node_names('example_good_as3.json')
