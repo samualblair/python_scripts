@@ -489,7 +489,115 @@ def Clean_up_node_names(in_filename) -> None:
 
 # TODO: Remove SA if just enabled
 
-# TODO: Update name of TCP profile if just timeout change
+def Simplify_tcp_profiles(in_filename) -> None:
+    '''
+    Parses F5 AS3 JSON File, looks for tcp profiles that only customize timeout value - simplifies with consistent naming and consolidates in app
+    This is destructive of original file, please backup file prior to running.
+    '''
+
+    destination = {}
+
+    with open(in_filename, 'r') as vars_file:
+        source = json.load(vars_file)
+
+        for dec_key in source:
+            value_of_key = source[dec_key]
+            #print(value_of_key)
+            destination[dec_key] = value_of_key
+        
+    # Close source file to prevent dictionary size change error
+
+    # Reopen source file
+    with open(in_filename, 'r') as vars_file:
+        source = json.load(vars_file)
+
+
+        for dec_key in source['declaration']:
+            # print(source['declaration'][i])
+            try:
+                for tenant_key in source['declaration'][dec_key]:
+
+                    #list_of_tcp_found = []
+                    tcp_profile_replacement_dict = {}
+                    vs_list = {}
+
+                    try:
+                        for application_key in source['declaration'][dec_key][tenant_key]:
+
+                            try:
+                                # name_of_application = source['declaration'][dec_key][tenant_key][application_key]
+                                class_of_application = source['declaration'][dec_key][tenant_key][application_key]['class']
+                                
+                                if class_of_application[0:8] == 'Service_':
+                                    # Catch most Service classes with profileTCP
+                                    try:
+                                        active_profileTCP = source['declaration'][dec_key][tenant_key][application_key]['profileTCP']["use"]
+                                        vs_list[application_key] = {'vs_name':application_key,'tcp_profile':active_profileTCP}
+                                    except KeyError:
+                                            # Catch if no server Name present
+                                        pass
+                                if class_of_application == 'TCP_Profile':
+                                    # Catch TCP Profile
+                                    #list_of_tcp_found.append(application_key)
+                                    # Check if only 1 customization is present
+                                    if len(source['declaration'][dec_key][tenant_key][application_key]) == 2:
+                                        # Catch if the only customization the TCP profile has is the idleTimeout set
+                                        try:
+                                            tcp_idle_timeout = source['declaration'][dec_key][tenant_key][application_key]['idleTimeout']
+                                            # print(tcp_idle_timeout)
+                                            old_tcp_profile_name = application_key
+                                            new_tcp_profile_name = 'tcp_timeout_' + str(tcp_idle_timeout)
+                                            tcp_profile_replacement_dict[old_tcp_profile_name] = {'tcp_profile':new_tcp_profile_name,'tcp_timeout':tcp_idle_timeout}
+
+                                        except TypeError:
+                                            pass
+                                        except KeyError:
+                                            pass
+                            except TypeError:
+                                pass
+                            except KeyError:
+                                pass
+                    except TypeError:
+                        pass
+                    except KeyError:
+                        pass
+
+                    try:
+                        # Walk through and update TCP Profile references in VS
+                        for element in vs_list:
+                            application_key = vs_list[element]['vs_name']
+                            active_profileTCP = vs_list[element]['tcp_profile']
+                            new_tcp_profile_name = tcp_profile_replacement_dict[active_profileTCP]['tcp_profile']
+                            # Update VS to use new profile
+                            destination['declaration'][dec_key][tenant_key][application_key]['profileTCP']["use"] = new_tcp_profile_name
+                       # Walk through and update TCP Profiles in APP
+                        for element in tcp_profile_replacement_dict:
+                            new_tcp_profile_name = tcp_profile_replacement_dict[element]['tcp_profile']
+                            tcp_idle_timeout = tcp_profile_replacement_dict[element]['tcp_timeout']
+                            new_tcp_profile_obj = {'idleTimeout':tcp_idle_timeout, "class": "TCP_Profile"}
+                            # Remove old profile to app
+                            destination['declaration'][dec_key][tenant_key].pop(element)
+                            # Add new profile to app
+                            destination['declaration'][dec_key][tenant_key][new_tcp_profile_name] = new_tcp_profile_obj
+
+                    except TypeError:
+                        pass
+                    except KeyError:
+                        pass
+
+            except TypeError:
+                pass
+            except KeyError:
+                pass
+            except Exception as error:
+                print(type(error).__name__)
+                print(error)
+
+    # output_filename = str(in_filename + '_updated.json')
+    output_filename = str(in_filename)
+
+    with open(output_filename, "w") as outfile: 
+        json.dump(destination, outfile, indent=2)
 
 
 if __name__ == "__main__":
@@ -500,3 +608,4 @@ if __name__ == "__main__":
     Update_schema('example_good_as3.json')
     Count_vips('example_good_as3.json')
     Clean_up_node_names('example_good_as3.json')
+    Simplify_tcp_profiles('example_good_as3.json')

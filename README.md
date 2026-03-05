@@ -69,7 +69,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
-* 2026.03.04 - Updated NS to BIG-IP workflow and AS3 parsing - cleaned up node names
+* 2026.03.05 - Updated NS to BIG-IP workflow and AS3 parsing - scripts for clean up of nodes and tcp profiles
 * 2026.02.24 - Added Apstra Cable Map update helper - create json updated file using an updated csv file
 * 2026.02.09 - BugFix in as3 parsing function - app and tenant name adjustments now accounts for already updated names - also refactored to look for _app instead of -app
 * 2025.12.20 - Added NS to BIG-IP workflows

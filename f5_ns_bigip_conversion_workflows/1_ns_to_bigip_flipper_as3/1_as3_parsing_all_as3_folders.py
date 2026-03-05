@@ -32,6 +32,7 @@ try:
                     lib_as3_parsing_function.Update_tenant_name(file_contents)
                     lib_as3_parsing_function.Update_schema(file_contents)
                     lib_as3_parsing_function.Clean_up_node_names(file_contents)
+                    lib_as3_parsing_function.Simplify_tcp_profiles(file_contents)
                     total_vs_counted += lib_as3_parsing_function.Count_vips(file_contents)
 
         except UnicodeDecodeError:
