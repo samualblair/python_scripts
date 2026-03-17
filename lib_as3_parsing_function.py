@@ -599,6 +599,70 @@ def Simplify_tcp_profiles(in_filename) -> None:
     with open(output_filename, "w") as outfile: 
         json.dump(destination, outfile, indent=2)
 
+def Mass_f5_flipper_split_apps(in_filename:str, folder_name_json='mass_convert_export_json', folder_name_ns='mass_convert_export_ns') -> None:
+    '''
+    Parses F5 Flipper mass export JSON File, looks for each APP's AS3 and NS Conf lines and creates a file for each.
+    Requires input filename to be passed, optionally can provide destination json and destination ns folder names.
+    If no destination folders provided defaults to 'mass_convert_export_json' and 'mass_convert_export_ns' folders.
+    '''
+
+    # Reopen source file
+    with open(in_filename, 'r') as vars_file:
+        source = json.load(vars_file)
+
+        for app_list_item in source['apps']:
+
+            try:
+                for dec_key in app_list_item['as3']['declaration']:
+                    
+                    try:
+                        for tenant_key in app_list_item['as3']['declaration'][dec_key]:
+                            try:
+                                # Path to container AS3 app_list_item['as3']
+                                # Path to container NS Lines app_list_item['sourceLines']
+
+                                # Useful paths
+                                # name_of_tenant_container = app_list_item['as3']['declaration'][dec_key]
+                                # name_of_app_container = app_list_item['as3']['declaration'][dec_key][tenant_key]
+                                # class_of_app_container = app_list_item['as3']['declaration'][dec_key][tenant_key]['class']
+
+                                class_of_application = app_list_item['as3']['declaration'][dec_key][tenant_key]['class']
+                                if class_of_application == 'Application':
+
+                                    # Prepare Destination File name based on Application Name
+                                    destination_as3_name = tenant_key
+                                    destination_nsconf_name = tenant_key
+
+                                    destination_as3_dict = app_list_item['as3']
+                                    # destination_as3_name = app_list_item['as3']['declaration']['id']
+
+                                    destination_nsconf_list = app_list_item['sourceLines']
+                                    # destination_nsconf_name = app_list_item['as3']['declaration']['id']
+
+                                    destination_as3_name = str(folder_name_json) + '/' + str(destination_as3_name) + '.json'
+                                    destination_nsconf_name = str(folder_name_ns) + '/' + str(destination_nsconf_name) + '.conf'
+
+                                    with open(destination_as3_name, "w") as outfile: 
+                                        json.dump(destination_as3_dict, outfile, indent=2)
+                                    
+                                    with open(destination_nsconf_name, "w", newline='') as outfile: 
+                                        outfile.writelines('\n'.join(str(line) for line in destination_nsconf_list)+'\n')
+                            except TypeError:
+                                pass
+                            except KeyError:
+                                pass
+                    except TypeError:
+                        pass
+                    except KeyError:
+                        pass
+
+            except TypeError:
+                pass
+            except KeyError:
+                pass
+            except Exception as error:
+                print(type(error).__name__)
+                print(error)
 
 if __name__ == "__main__":
     # Testing with single file run as script rather than imported function

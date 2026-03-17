@@ -19,8 +19,10 @@ Obtain ns.conf file , or tgz backup of netscaler (holds ns.conf file in it)
 
 *NOTE: Good time to commit if using git repo*
 
-## Step 2
+## Step 2a - Single Flipper Convert and Export
 Initial cutting of App Configs (NS.conf style) and AS3 Conversion (Initial from F5 Flipper)
+
+Perform Mass Export recommended if more than a few Applications, or you are already familiar with the process - See Step 2b
 
 * Using VS Code F5 Flipper Extension
   * Right Click on 'ns.conf' file and select 'Explore ADC/NS.conf/tgz'
@@ -33,6 +35,43 @@ Initial cutting of App Configs (NS.conf style) and AS3 Conversion (Initial from 
   * Click on APP name directly, and render AS3 JSON Declaration
     * Store under AS3 folder (eg. App123.as3.json )
   * Repeat for every APP
+
+Following Files should exist
+```
+# Required
+./AS3/App123.as3.json
+
+# Very Helpful - Expected for manual cleanup reference
+./Citrix_nsconf_lines/App123.conf
+
+# Optional
+./ns_vips.csv
+./Citrix_F5_Flipper_details/App123.flipper.json
+```
+
+In larger conversions feel free to create more division under the AS3 folder, such as ./AS3/DC1-INT , ./AS3/DC1-DMZ , ./AS3/DC2-DMZ
+
+*NOTE: Good time to commit if using git repo*
+
+## Step 2a - Mass Flipper Convert and Export - BYPASSES FAST TEMPLATES
+Initial cutting of App Configs (NS.conf style) and AS3 Conversion (Initial from F5 Flipper)
+
+Perform Mass Export recommended if more than a few Applications, or you are already familiar with the process - See Step 2b
+
+* Using VS Code F5 Flipper Extension
+  * Right Click on 'ns.conf' file and select 'Explore ADC/NS.conf/tgz'
+* Navigate (May auto navigate) to F5 Flipper View
+  * Hover near APPs - do not select any specific one
+    * Hover to label 'Apps' and to the right there should be a 3 options - Action, CSV, and a '|->' for export all apps to AS3
+    * Click this button, a large JSON will be generated, with each app, AS3 conversion, NS lines, and other information.
+    * Save this data into a mass_export_source.json (any name is fine, recommend putting in a folder such as 'mass_convert_source')
+  * Mass export each APP JSON and APP NS Config Lines into seperate files
+    * Run 0_mass_export_files.py (change folder names if you want them different)
+    * Provide the script the folder with source file(s)
+    * Script will create folders with exports for each of the files all at once
+    * Move converted files (first pass) to folder such as:
+      * Move mass_convert_export_json -> AS3
+      * Move mass_convert_export_ns -> Citrix_nsconf_lines
 
 Following Files should exist
 ```
