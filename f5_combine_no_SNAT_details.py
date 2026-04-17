@@ -26,7 +26,6 @@ def print_output_values(reading_file:str='virtuals_all_no_snat_outfile.txt') -> 
 
 if __name__ == "__main__":
     # assign directory
-    # directory = 'VPXRP01'
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # Walk directory tree and record for later use

@@ -194,7 +194,7 @@ asm policy
 asm predefined-policy
 ```
 
-Alternativly: Steps to remove ASM once loaded if that is the route you want to go
+Alternatively: Steps to remove ASM once loaded if that is the route you want to go
 [f5-article-K35226430](https://my.f5.com/manage/s/article/K35226430)
 
 ## Sometimes APM needs additional folders besides certs

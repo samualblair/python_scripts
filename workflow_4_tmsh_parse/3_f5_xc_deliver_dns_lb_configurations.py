@@ -10,7 +10,7 @@ import requests
 
 def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str, allow_replace:bool=False) -> None:
     """
-    Takes JSON Configuraiton file and delivers to F5 DC (XC) SaaS Platform via REST API
+    Takes JSON Configuration file and delivers to F5 DC (XC) SaaS Platform via REST API
     """
 
     if f5xc_object_type == "test":
@@ -51,7 +51,7 @@ def f5_xc_deliver_configs(f5_xc_json:str, f5xc_object_type:str, allow_replace:bo
                     return
 
             if f5xc_object_type == "1_healthcheck":
-                # Step 1 - Create healthchecks
+                # Step 1 - Create Healthchecks
                 print(f" F5 XC DNS - Creating Health Monitor - POST for: {f5xc_object_name}")
                 received_code = f5_xc_create_dns_lb_healthcheck(f5_xc_json_config_string)
                 time.sleep(2)
@@ -114,10 +114,10 @@ def f5_xc_create_dns_lb_healthcheck(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Healthcheck
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks"
     payload = f5_xc_json
 
     headers = {
@@ -147,10 +147,10 @@ def f5_xc_replace_dns_lb_healthcheck(f5_xc_json:str,f5xc_object_name:str) -> Non
     """
     Creates XC DNS-LB Healthcheck
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
     payload = f5_xc_json
 
     headers = {
@@ -175,10 +175,10 @@ def f5_xc_get_dns_lb_healthcheck(f5xc_object_name:str) -> None:
     """
     Checks XC DNS-LB Healthcheck
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_health_checks/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
     print(f"The response code was: {response.status_code}")
@@ -186,17 +186,17 @@ def f5_xc_get_dns_lb_healthcheck(f5xc_object_name:str) -> None:
 
     # To load response as object
     # json_dict = response.json
-    # Then to print back as formated string
+    # Then to print back as formatted string
     # json_string = json.dumps(json_dict, indent=4)
 
 def f5_xc_create_dns_lb_pool(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools"
     payload = f5_xc_json
 
     headers = {
@@ -226,10 +226,10 @@ def f5_xc_replace_dns_lb_pool(f5_xc_json:str,f5xc_object_name:str) -> None:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
     payload = f5_xc_json
 
     headers = {
@@ -255,10 +255,10 @@ def f5_xc_get_dns_lb_pool(f5xc_object_name:str) -> None:
     """
     Checks XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_lb_pools/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
     print(f"The response code was: {response.status_code}")
@@ -266,7 +266,7 @@ def f5_xc_get_dns_lb_pool(f5xc_object_name:str) -> None:
 
     # To load response as object
     # json_dict = response.json
-    # Then to print back as formated string
+    # Then to print back as formatted string
     # json_string = json.dumps(json_dict, indent=4)
 
 
@@ -274,10 +274,10 @@ def f5_xc_create_dns_lb_dnslb(f5_xc_json:str) -> int:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
 
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers"
     payload = f5_xc_json
 
     headers = {
@@ -307,10 +307,10 @@ def f5_xc_replace_dns_lb_dnslb(f5_xc_json:str,f5xc_object_name:str) -> None:
     """
     Creates XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
 
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
     payload = f5_xc_json
 
     headers = {
@@ -335,10 +335,10 @@ def f5_xc_get_dns_lb_dnslb(f5xc_object_name:str) -> None:
     """
     Checks XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_load_balancers/{f5xc_object_name}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     
     print(f"The response code was: {response.status_code}")
@@ -346,7 +346,7 @@ def f5_xc_get_dns_lb_dnslb(f5xc_object_name:str) -> None:
 
     # To load response as object
     # json_dict = response.json
-    # Then to print back as formated string
+    # Then to print back as formatted string
     # json_string = json.dumps(json_dict, indent=4)
 
 
@@ -354,10 +354,10 @@ def f5_xc_create_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns
     """
     Creates XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}"
     payload = f5_xc_json
 
     headers = {
@@ -388,10 +388,10 @@ def f5_xc_create_dns_lb_rrecord(f5_xc_json:str, f5xc_dns_zone_name:str, f5xc_dns
 #     """
 #     Creates XC DNS-LB Pool
 #     Takes configuration json
-#     Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+#     Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
 #     """
     
-#     url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
+#     url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
 #     payload = f5_xc_json
 
 #     headers = {
@@ -416,10 +416,10 @@ def f5_xc_get_dns_lb_rrecord(f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str,
     """
     Checks XC DNS-LB Pool
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
 
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones/{f5xc_dns_zone_name}/rrsets/{f5xc_dns_zone_rr_group}/{f5xc_dns_zone_rr_record_name}/{f5xc_dns_zone_rr_get_type}"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
       
     print(f"The response code was: {response.status_code}")
@@ -427,17 +427,17 @@ def f5_xc_get_dns_lb_rrecord(f5xc_dns_zone_name:str, f5xc_dns_zone_rr_group:str,
 
     # To load response as object
     # json_dict = response.json
-    # Then to print back as formated string
+    # Then to print back as formatted string
     # json_string = json.dumps(json_dict, indent=4)
 
 def f5_xc_get_dns_zones() -> None:
     """
     Creates XC DNS-LB Healthcheck
     Takes configuration json
-    Expects 'f5xc_tennant_short_id' and 'f5xc_namespace' strings to be defined
+    Expects 'f5xc_tenant_short_id' and 'f5xc_namespace' strings to be defined
     """
     
-    url = f"https://{f5xc_tennant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones"
+    url = f"https://{f5xc_tenant_short_id}.console.ves.volterra.io/api/config/dns/namespaces/{f5xc_namespace}/dns_zones"
     response = requests.request("GET", url, verify=server_cert_ca_location, cert=(client_cert_location, client_key_location))
     print(f"When Checking Zones - the response code was: {response.status_code}")
     # print(response.text)
@@ -475,8 +475,8 @@ if __name__ == "__main__":
     # directory = "./jinja_rendered"
     # directory = "retry"
 
-    f5xc_tennant_short_id = input('Please enter Short Tennant ID such as: exampletennant\n')
-    f5xc_tennant_long_id = input('Please enter Long Tennant ID such as: exampletennant-longid \n')
+    f5xc_tenant_short_id = input('Please enter Short tenant ID such as: exampletenant\n')
+    f5xc_tenant_long_id = input('Please enter Long tenant ID such as: exampletenant-longid \n')
     f5xc_namespace = input('Please enter namespace - For DNS-LB it should be: system \n')
 
     # Walk directory tree and record for later use
@@ -518,7 +518,7 @@ if __name__ == "__main__":
     # print(sys.argv[1]) --- Only navigates into folder - does not check base folder currently
     try:
 
-        # # All folders Recursivly but in no order
+        # # All folders recursively but in no order
 
         # for folder_name in recursive_folder_list:
         #     for file_name in os.listdir(folder_name):
@@ -606,7 +606,7 @@ if __name__ == "__main__":
     except IndexError:
         print('Issue with file - ' + file_name)
 
-    # # Alternativly deliver single file
+    # # Alternatively deliver single file
     # # print(sys.argv[1])
     # try:
     #     f5_xc_deliver_configs(sys.argv[1])

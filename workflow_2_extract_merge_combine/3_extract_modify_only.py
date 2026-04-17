@@ -5,24 +5,24 @@ import subprocess
 import configparser
 from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
 
-def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> str:
+def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> str:
     """
     Extracts All Files from bigip archive - qkview, ucs, generic tar.gz
     Will return string with folder path of extracted (with original name + _unpacked)
     """
-    path_of_new_folder = (f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
+    path_of_new_folder = (f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
 
     try:
         os.mkdir(path_of_new_folder)
     except FileExistsError:
         print('Folder already existed')
 
-    sub_comamnd = f'tar -xzf "{bigip_conf_filename}" -C "{path_of_new_folder}"'
-    subprocess.run(sub_comamnd, shell=True)
+    sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{path_of_new_folder}"'
+    subprocess.run(sub_command, shell=True)
     
     return path_of_new_folder
 
-def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) -> None:
+def update_maxcores(bigdb_filename:str='BigDB.dat',file_extension_length:int=4) -> None:
     """
     Directly updates BigDB.dat file
     """
@@ -64,7 +64,7 @@ def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) 
         os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
 
 if __name__ == "__main__":
-    # Assign starting directory to recursivly work in
+    # Assign starting directory to recursively work in
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # Iterate over files in the directory, Walk directory tree and record for later use
@@ -99,7 +99,7 @@ if __name__ == "__main__":
     except IndexError:
         print('Issue with file - ' + file_name)
 
-    # # Modify Bigip.dat files - should be known location inside exctracted folder - so direct edit is possible
+    # # Modify Bigip.dat files - should be known location inside extracted folder - so direct edit is possible
     # # Concerns about folder pathing on different OSes (LINUX/MACOS/UNIX/POSIX use '/' and WINDOWS uses '\') , only defined for non-windows
     # for extracted_folder in extracted_folders_list:
     #     bigip_dat_filename = extracted_folder + '/config/BigDB.dat'

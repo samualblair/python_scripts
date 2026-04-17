@@ -13,9 +13,9 @@ def convert_to_json(bigip_conf_filename:str='bigip.conf') -> None:
     """
     Convert a bigip.conf file into a json output. Input filename (default bigip.conf) , output filename.json (ex. bigip.conf.json)
 
-    Can be used to quickly produce JSON to help work with Virtual Server configurations programically
+    Can be used to quickly produce JSON to help work with Virtual Server configurations programmatically
 
-    WARNIGN: Only works with supported features (don't expect every config line to be present).
+    WARNING: Only works with supported features (don't expect every config line to be present).
 
     """
 
@@ -39,7 +39,6 @@ def convert_to_json(bigip_conf_filename:str='bigip.conf') -> None:
 
 if __name__ == "__main__":
     # assign directory
-    # directory = 'VPXRP01'
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # iterate over files in that directory

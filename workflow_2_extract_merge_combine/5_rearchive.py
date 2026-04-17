@@ -3,26 +3,26 @@
 import os
 import subprocess
 
-def archive_ucs(bigip_conf_folder:str,file_extention_length:int=0) -> None:
+def archive_ucs(bigip_conf_folder:str,file_extension_length:int=0) -> None:
     """
     Archives the provided folder name and creates a .ucs file in parent directory with original directory name and _new.ucs appended.
-    Allows entering number of charachters to be removed form name , for example to remove _unpacked that is 9 charachters should be removed from name.
+    Allows entering number of characters to be removed form name , for example to remove _unpacked that is 9 characters should be removed from name.
     """
 
     if len(bigip_conf_folder) == 0:
         print('No folder name provided')
         return
 
-    if file_extention_length < 0:
-        print('New UCS name trim length cannot be a negative number, not triming new ucs name')
-        file_extention_length = 0
+    if file_extension_length < 0:
+        print('New UCS name trim length cannot be a negative number, not trimming new ucs name')
+        file_extension_length = 0
 
-    if len(bigip_conf_folder) - file_extention_length < 1:
-        print('New UCS name trim length is to large, not triming new ucs name')
-        file_extention_length = 0
+    if len(bigip_conf_folder) - file_extension_length < 1:
+        print('New UCS name trim length is to large, not trimming new ucs name')
+        file_extension_length = 0
 
-    # New file name should be old path without '_unpacked' or -9 charachters, then add '_new.ucs' to end
-    path_of_new_ucs_file = (f'{bigip_conf_folder[0:len(bigip_conf_folder)-file_extention_length]}_new.ucs')
+    # New file name should be old path without '_unpacked' or -9 characters, then add '_new.ucs' to end
+    path_of_new_ucs_file = (f'{bigip_conf_folder[0:len(bigip_conf_folder)-file_extension_length]}_new.ucs')
 
     # Inform User of Creation Start
     print(f'Starting Creating of archive: "{path_of_new_ucs_file}" from "{bigip_conf_folder}"')
@@ -36,8 +36,8 @@ def archive_ucs(bigip_conf_folder:str,file_extention_length:int=0) -> None:
     # print("Now.. "+os.getcwd())
 
     # Create Archive. Note 'tar' exclude does not need to escape the period '.' character
-    sub_comamnd = f'tar --disable-copyfile --exclude="._*" --exclude=".DS_Store" -czf "../{path_of_new_ucs_file}" *'
-    subprocess.run(sub_comamnd, shell=True)
+    sub_command = f'tar --disable-copyfile --exclude="._*" --exclude=".DS_Store" -czf "../{path_of_new_ucs_file}" *'
+    subprocess.run(sub_command, shell=True)
 
     # Archive Created
     # print(f'Finished archive: {os.getcwd()}/../{bigip_conf_folder}')
@@ -47,11 +47,11 @@ def archive_ucs(bigip_conf_folder:str,file_extention_length:int=0) -> None:
     # print(os.getcwd())
 
 if __name__ == "__main__":
-    # Assign starting directory to recursivly work in
+    # Assign starting directory to recursively work in
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
-    # Assuming _unpacked in folder name , this would be 9 charachters that should be removed
-    characters_to_trim = int(input('Please enter the number of charachters you want to trim from folder name (HINT: removing "_unpacked" would be 9)\n'))
+    # Assuming _unpacked in folder name , this would be 9 characters that should be removed
+    characters_to_trim = int(input('Please enter the number of characters you want to trim from folder name (HINT: removing "_unpacked" would be 9)\n'))
 
     archive_ucs(directory,characters_to_trim)
 

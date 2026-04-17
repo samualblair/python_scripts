@@ -6,24 +6,24 @@ import subprocess
 import configparser
 from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR, S_IXUSR
 
-def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> str:
+def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> str:
     """
     Extracts All Files from bigip archive - qkview, ucs, generic tar.gz
     Will return string with folder path of extracted (with original name + _unpacked)
     """
-    path_of_new_folder = (f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
+    path_of_new_folder = (f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
 
     try:
         os.mkdir(path_of_new_folder)
     except FileExistsError:
         print('Folder already existed')
 
-    sub_comamnd = f'tar -xzf "{bigip_conf_filename}" -C "{path_of_new_folder}"'
-    subprocess.run(sub_comamnd, shell=True)
+    sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{path_of_new_folder}"'
+    subprocess.run(sub_command, shell=True)
     
     return path_of_new_folder
 
-def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) -> None:
+def update_maxcores(bigdb_filename:str='BigDB.dat',file_extension_length:int=4) -> None:
     """
     Directly updates BigDB.dat file
     """
@@ -64,29 +64,29 @@ def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) 
         # This makes the file read only again (User, Group,)
         os.chmod(bigdb_filename, S_IRUSR|S_IRGRP|S_IROTH)
 
-def archive_ucs(bigip_conf_folder:str,file_extention_length:int=9) -> str:
+def archive_ucs(bigip_conf_folder:str,file_extension_length:int=9) -> str:
     """
     Archives previously extracted files and folders from bigip archive (ucs, generic tar.gz) into a new ucs archive based on input folder path
     """
 
-    # New file name should be old path without '_unpacked' or -9 charachters, then add '_new.ucs' to end
-    path_of_new_ucs_file = (f'{bigip_conf_folder[0:len(bigip_conf_folder)-file_extention_length]}_new.ucs')
+    # New file name should be old path without '_unpacked' or -9 characters, then add '_new.ucs' to end
+    path_of_new_ucs_file = (f'{bigip_conf_folder[0:len(bigip_conf_folder)-file_extension_length]}_new.ucs')
 
     # Inform User of Creation Start
     print(f'Starting Creating of archive: "{path_of_new_ucs_file}" from "{bigip_conf_folder}"')
 
     # Create Archive
-    sub_comamnd = f'find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -'
-    subprocess.run(sub_comamnd, shell=True)
+    sub_command = f'find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -'
+    subprocess.run(sub_command, shell=True)
 
     # Address tar relative folder creation, use find and sed to deal with issue
     # Credit to ideas in
     # https://stackoverflow.com/questions/939982/how-do-i-tar-a-directory-of-files-and-folders-without-including-the-directory-it
     # OPTION 1a: Deal with issue using GNU Find only Files (f) Links (l) and subdirectories (d) which should be good
     # find "{bigip_conf_folder} \( -type f -o -type l -o -type d \) -printf "%P\n" | tar -czf {path_of_new_ucs_file} --no-recursion -C "{path_of_new_ucs_file}" -T -
-    # OPTION 2: Deal with issue using non-GNU Find and sed , using this method for now for better compatability, only Files (f) Links (l) and subdirectories (d) which should be good
+    # OPTION 2: Deal with issue using non-GNU Find and sed , using this method for now for better compatibility, only Files (f) Links (l) and subdirectories (d) which should be good
     # find "{bigip_conf_folder}"/ -type f -o -type l -o -type d | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -
-    # OPTION 2b: Deal with issue using non-GNU Find and sed , using this method for now for better compatability, any type
+    # OPTION 2b: Deal with issue using non-GNU Find and sed , using this method for now for better compatibility, any type
     # find "{bigip_conf_folder}"/ | sed s,^"{bigip_conf_folder}"/,, | tar -czf "{path_of_new_ucs_file}" --no-recursion -C "{bigip_conf_folder}"/ -T -
 
     # Archive Created
@@ -99,18 +99,18 @@ def transfer_ucs(bigip_ucs:str,hostname_for_transfer:str,username_for_transfer:s
     Transfers ucs to remote device archive based on input file path
     """
 
-    # New file name should be old path without '_unpacked' or -9 charachters, then add '_new.ucs' to end
+    # New file name should be old path without '_unpacked' or -9 characters, then add '_new.ucs' to end
     bigip_ucs
 
     # Inform User of Creation Start
     print(f'Starting Transfer of archive: "{bigip_ucs}" with username "{username_for_transfer}"')
 
     # Transfer ucs via scp
-    sub_comamnd = f'scp "{bigip_ucs}" "{username_for_transfer}@{hostname_for_transfer}://var/local/ucs/"'
-    subprocess.run(sub_comamnd, shell=True)
+    sub_command = f'scp "{bigip_ucs}" "{username_for_transfer}@{hostname_for_transfer}://var/local/ucs/"'
+    subprocess.run(sub_command, shell=True)
 
     # Archive Created
-    print(f'Finshed Transfer of archive: "{bigip_ucs}"')
+    print(f'Finished Transfer of archive: "{bigip_ucs}"')
 
 def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
     """
@@ -118,7 +118,7 @@ def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
     """
 
     # Inform User of Creation Start
-    print(f'Starting Removal of unpaked archive: "{bigip_ucs_extracted_folder}"')
+    print(f'Starting Removal of unpacked archive: "{bigip_ucs_extracted_folder}"')
 
     # Make all files writable , include execute on directory, this will allow clean removal
     def recursive_chmod(path):
@@ -134,8 +134,8 @@ def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
     recursive_chmod(bigip_ucs_extracted_folder)
 
     # Alternative process to Ensure all files are writeable by user, for removal
-    # sub_comamnd = f'chmod -R u+w "{bigip_ucs_extracted_folder}"'
-    # subprocess.run(sub_comamnd, shell=True)
+    # sub_command = f'chmod -R u+w "{bigip_ucs_extracted_folder}"'
+    # subprocess.run(sub_command, shell=True)
 
     # Cleanup - Remove the files and folder
     def recursiveremoval(path):
@@ -159,14 +159,14 @@ def cleanup_folder(bigip_ucs_extracted_folder:str) -> None:
     recursiveremoval(bigip_ucs_extracted_folder)
 
     # Alternative process to Remove the files and folder with rm recursive
-    # sub_comamnd = f'rm -R "{bigip_ucs_extracted_folder}"'
-    # subprocess.run(sub_comamnd, shell=True)
+    # sub_command = f'rm -R "{bigip_ucs_extracted_folder}"'
+    # subprocess.run(sub_command, shell=True)
 
     # Archive Created
     print(f'Removed: "{bigip_ucs_extracted_folder}"')
 
 if __name__ == "__main__":
-    # Assign starting directory to recursivly work in
+    # Assign starting directory to recursively work in
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # Iterate over files in the directory, Walk directory tree and record for later use
@@ -201,7 +201,7 @@ if __name__ == "__main__":
     except IndexError:
         print('Issue with file - ' + file_name)
 
-    # # Modify Bigip.dat files - should be known location inside exctracted folder - so direct edit is possible
+    # # Modify Bigip.dat files - should be known location inside extracted folder - so direct edit is possible
     # # Concerns about folder pathing on different OSes (LINUX/MACOS/UNIX/POSIX use '/' and WINDOWS uses '\') , only defined for non-windows
     # for extracted_folder in extracted_folders_list:
     #     bigip_dat_filename = extracted_folder + '/config/BigDB.dat'
@@ -252,9 +252,9 @@ if __name__ == "__main__":
         ask_if_transfer = input('Do you want to transfer the files? If so type "yes" and if not then type "no" exactly\n')
 
         if ask_if_transfer == "yes":
-            # Assign starting directory to recursivly work in
+            # Assign starting directory to recursively work in
             remote_f5_host = input('Please enter hostname or ip of remote f5 for file transfer \n')
-            # Assign starting directory to recursivly work in
+            # Assign starting directory to recursively work in
             remote_f5_username = input('Please enter username of remote f5 for file transfer \n')
             print('You will be asked for the password each time, unless using ssh key authentication in which case no password prompt will be shown')
             print('Transfers Starting')
@@ -271,7 +271,7 @@ if __name__ == "__main__":
        
         else:
             three_tries += 1
-            print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
+            print(f'Not understood, please enter "yes" or "no" - Attempt {three_tries}')
 
     if three_tries > 3 and ask_if_transfer != "no" and ask_if_transfer != "yes":
         print("Sorry to many incorrect responses, proceeding to skip file transfer")
@@ -298,7 +298,7 @@ if __name__ == "__main__":
        
         else:
             three_tries += 1
-            print(f'Not understood, please enter "yes" or "no" - Attmpt {three_tries}')
+            print(f'Not understood, please enter "yes" or "no" - Attempt {three_tries}')
 
     if three_tries > 3 and ask_if_cleanup != "no" and ask_if_cleanup != "yes":
         print("Sorry to many incorrect responses, proceeding to skip cleanup of unpacked folders")

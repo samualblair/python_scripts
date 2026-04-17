@@ -13,7 +13,7 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
     """
     Reviews JSON files previously created from F5 python json converter, outputs custom data
 
-    WARNIGN: Only works with supported features (don't expect every config line to be present).
+    WARNING: Only works with supported features (don't expect every config line to be present).
 
     """
 
@@ -168,7 +168,6 @@ def parse_json_values(bigip_conf_filename:str='virtuals_all.json') -> None:
 
 if __name__ == "__main__":
     # assign directory
-    # directory = 'VPXRP01'
     directory = input('Please enter folder name to parse all files within (HINT: may navigate back a folder with ../FOLDERNAME )\n')
 
     # Walk directory tree and record for later use

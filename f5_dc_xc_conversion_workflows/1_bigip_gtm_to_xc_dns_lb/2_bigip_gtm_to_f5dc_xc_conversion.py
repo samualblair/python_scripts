@@ -166,10 +166,10 @@ def build_f5dc_xc_config_vars(bigip_gtm_dict:dict) -> None:
         # TODO: ENSURE DNS ZONE NAME IS SPECIFIED FOR XC - xc_dns_zone_name , 
         xc_vars_dict[dns_name]["xc_dns_zone_name"] = "xczone.example.com"
 
-        # XC TENNANT ID MANUALLY 
+        # XC tenant ID MANUALLY 
         # TODO: Take in Tennat ID from file or user input
-        xc_vars_dict[dns_name]["xc_long_tennat_id"] = "exampletennant-longid"
-        xc_vars_dict[dns_name]["xc_short_tennat_id"] = "exampletennant"
+        xc_vars_dict[dns_name]["xc_long_tennat_id"] = "exampletenant-longid"
+        xc_vars_dict[dns_name]["xc_short_tennat_id"] = "exampletenant"
         
         # xc_vars_dict[dns_name]["gtm_dns_lb"] = bigip_gtm_dict[dns_name]["wideip a"]["pools"]
         xc_vars_dict[dns_name]["xc_dns_lb"] = {}

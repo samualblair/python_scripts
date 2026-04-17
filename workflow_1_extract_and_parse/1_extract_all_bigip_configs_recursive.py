@@ -7,12 +7,12 @@ import subprocess
 
 # subprocess.run(["ls", "-l"]) 
 
-def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_length:int=7) -> None:
+def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> None:
     """
     Extracts Config Files from bigip archive - qkview, ucs, generic tar.gz
     """
-    # subcomamnd = f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
-    # subprocess.run(subcomamnd)
+    # subcommand = f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
+    # subprocess.run(subcommand)
     # command_output = subprocess.run(f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"', shell=True)
     # print('this_is_file'+command_output)
 
@@ -28,15 +28,15 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
 
     try:
         # Take current filename as-is expecting path to be included if needed
-        os.mkdir(f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
+        os.mkdir(f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
     except FileExistsError:
         # Notify that folder already existed
-        print(f'Folder already existed - {bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked')
+        print(f'Folder already existed - {bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
 
     for config_tar_file_path in string_list:
         # Take current filename as-is expecting path to be included if needed
-        sub_comamnd = f'tar -xzf "{bigip_conf_filename}" -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extention_length]}_unpacked" "{config_tar_file_path}"'
-        subprocess.run(sub_comamnd, shell=True)
+        sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked" "{config_tar_file_path}"'
+        subprocess.run(sub_command, shell=True)
 
         
         #subprocess.run(f'tar -xzf {bigip_conf_filename} -C "unpacked_{bigip_conf_filename[2:len(bigip_conf_filename)]}" "{config_tar_file_path}"', shell=True)
@@ -46,8 +46,8 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extention_l
     # with open(bigip_conf_filename, 'r') as archive_file:
     #     # subprocess.run(["ls", "-l"]) 
     #     print(archive_file)
-    #     # subcomamnd = f'tar -tzf {archive_file.name}| grep bigip.conf | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
-    #     # subprocess.run(subcomamnd)
+    #     # subcommand = f'tar -tzf {archive_file.name}| grep bigip.conf | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
+    #     # subprocess.run(subcommand)
 
 
 

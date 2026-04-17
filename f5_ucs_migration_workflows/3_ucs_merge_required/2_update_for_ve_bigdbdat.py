@@ -5,7 +5,7 @@ import configparser
 from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
 
 
-def update_maxcores(bigdb_filename:str='BigDB.dat',file_extention_length:int=4) -> None:
+def update_maxcores(bigdb_filename:str='BigDB.dat',file_extension_length:int=4) -> None:
     """
     Directly updates BigDB.dat file
     """

@@ -1,10 +1,10 @@
 # F5 UCS Migration Workflows - 2 - Extract archive and perform some changes (no expectation of merging)
 
 This workflow supports taking source UCS files, extracting, modifying where possible, and leaving extracted for further changes.
-Specificially this is for minimal changes that are known to need to be made are done, that can all be predicted.
-Currently that means only changes needed to alllow a physical UCS to load into a VE (changes to Bigdb.dat file).
+Specifically this is for minimal changes that are known to need to be made are done, that can all be predicted.
+Currently that means only changes needed to allow a physical UCS to load into a VE (changes to Bigdb.dat file).
 
-This then requires manual work to peform any other changes desired, and a manual rearchive when done.
+This then requires manual work to perform any other changes desired, and a manual re-archive when done.
 
 FUTURE TODO: Add script 2 to re-archive for user as alternative to manually using tar with each unpacked folder
 
@@ -53,13 +53,11 @@ Finish Modification Process
     - Another option is use something like find to build tar
       ```bash
       find "ucsname_unpacked"/ -type f -o -type l -o -type d | sed s,^"ucsname_unpacked"/,, | tar -czf "new_ucs.tar.gz" --no-recursion -C "ucsname_unpacked"/ -T -
-      cd ucsname_unpacked
-      tar czf ../newtar.tar.gz *
       ```
   - FUTURE TODO: Add script 2 to re-archive for user as alternative to manually using tar with each unpacked folder
 
 Cleanup: Remove the 'unpacked' folder
-  - Not needed - can be safely delted
+  - Not needed - can be safely deleted
 
 Optional (for less confusion) Move new .ucs to 'updated' folder.
   - Example: Place .ucs files under \<local-folder-root>/legacy_ucs_configs/\<site>/updated
@@ -70,7 +68,7 @@ Optional (for working in a group) Upload new .ucs files to remote folder
 Load on new device (or lab for testing)
   - Ensure new device has a required license level
   - Ensure new device has correct master key
-  - Copy / import the new .ucs file to BigIP and laod.
+  - Copy / import the new .ucs file to BigIP and load.
 
 
 ## Script Overviews
@@ -89,6 +87,6 @@ Updating [License.MaxCores] with value=8 in the file ./ucs_test/f5_2_backup_unpa
 Updating [License.MaxCores] with value=8 in the file ./ucs_test/f5_2_backup_unpacked/config/.diffVersions/config/BigDB.dat/BigDB.dat
 ❯
 
-# the 'extracted folder' (with already modified BigDB.dat files) is availble to work in
+# the 'extracted folder' (with already modified BigDB.dat files) is available to work in
 
 ```
