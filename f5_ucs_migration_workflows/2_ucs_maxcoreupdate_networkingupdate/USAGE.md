@@ -54,6 +54,14 @@ Finish Modification Process
       ```bash
       find "ucsname_unpacked"/ -type f -o -type l -o -type d | sed s,^"ucsname_unpacked"/,, | tar -czf "new_ucs.tar.gz" --no-recursion -C "ucsname_unpacked"/ -T -
       ```
+    - On MacOS you want to be careful to avoid ._ files which can cause problems loading configuration after reboots or upgrades
+      ```bash
+      find "ucsname_unpacked"/ -type f -o -type l -o -type d | sed s,^"ucsname_unpacked"/,, | grep -v -E "\._|\.DS_Store" | tar --disable-copyfile -czf "new_ucs.tar.gz" --no-recursion -C "ucsname_unpacked"/ -T -
+      ```
+    - And if you forget on MacOS then keep this handy to recover
+      ```bash
+      find . -name '\._*' -delete
+      ```
   - FUTURE TODO: Add script 2 to re-archive for user as alternative to manually using tar with each unpacked folder
 
 Cleanup: Remove the 'unpacked' folder
