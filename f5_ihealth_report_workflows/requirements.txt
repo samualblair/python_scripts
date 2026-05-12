@@ -1,0 +1,2 @@
+# Requirements for iHealth Python Scripts
+requests==2.33.1

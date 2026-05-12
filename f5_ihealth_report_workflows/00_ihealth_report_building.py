@@ -94,12 +94,12 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
     return(access_token)
 
 
-def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str):
+def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_name:str):
     """
     Uploads a QKview file to iHealth
     """
 
-    # print(qkview_file)
+    print('Uploading to ihealth: ' + qkview_file)
     ihealth_visible_in_gui = ''
     ihealth_description = ''
     ihealth_f5_support_case = ''
@@ -113,33 +113,37 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str):
         'f5_support_case': '',
         'share_with_case_owner': ''
     }
-    files=[
-        ('qkview',('example.qkview',open('example.qkview','rb'),'application/octet-stream'))
-    ]
-
-
+    files = {
+        'qkview': (qkview_file_name, open(qkview_file,'rb'),'application/octet-stream') 
+    }
     headers = {
         'Accept': 'application/vnd.f5.ihealth.api',
         'Authorization': f'Bearer {f5_ihealth_token}'
     }
     
-    # TODO: Identify proper CA cert for veritication
+    # TODO: Identify proper CA cert for verification
     # response = requests.request(
     #     "POST", url, headers=headers, data=payload, verify=ca_cert)
     
     response = requests.request(
-        "POST", url, headers=headers, data=payload)
+        "POST", url, headers=headers, data=payload, files=files)
 
     print(f"The response code was: {response.status_code}")
 
-    # print(response.text)
-    response_json = response.json()
-    access_token = response_json["access_token"]
+    # Need to work on response
+    print(response.text)
+    #response_json = response.json()
+    #access_upload_results = response_json["access_token"]
+    access_upload_results = response.text
+
+    # TODO: Work on collecting results id list by parsing xml
+    # Looks like response can come in xml
+    # qkview.gui_uri
 
     # Arbitrary 1 second wait to ensure access token is in effect prior to other API calls
     time.sleep(1)
 
-    return(access_token)
+    return(access_upload_results)
 
 
 def upload_directory_files_to_ihealth(token, directory:str):
@@ -147,6 +151,7 @@ def upload_directory_files_to_ihealth(token, directory:str):
     Recursively finds QKview files and uploads to iHealth
     """
 
+    upload_results = { }
     # iterate over files in
     # that directory
     # Walk directory tree and record for later use
@@ -168,13 +173,14 @@ def upload_directory_files_to_ihealth(token, directory:str):
                     try:
                         # Only try to parse file if it is name ends with .json
                         if file_name[-7:] == ".qkview":
-                            upload_qkview_to_ihealth(token, file_contents)
+                            upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name)
                     # Catch when file is not parsable UTF 8 or similar
                     except UnicodeDecodeError:
                         print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
     except IndexError:
         print('Issue with file - ' + file_name)
-
+    
+    return(upload_results)
 
 if __name__ == "__main__":
 
@@ -193,18 +199,23 @@ if __name__ == "__main__":
 
     login_token = f5_ihealth_api_login(user,password,server_cert_ca_location)
 
-    upload_directory_files_to_ihealth(login_token, base_directory)
+    # Submit Report if chosen
+    if (ihealth_operation_chosen == "1_submit") or (ihealth_operation_chosen == "all"):
+        results_dict = upload_directory_files_to_ihealth(login_token, base_directory)
 
+    # TODO: Work on collecting results id list
     f5_ihealth_qkview_id_list = [
         "00000000",
         "00000001"
     ]
 
+    # Download Report if chosen
+    if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
 
-    for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
-        ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id)
-        filename_string = f'./{ihealth_diagnostic_data_dict["system_information"]["hostname"]}_diag_data.json'
-        # No need to parse out - backup entire response
-        ihealth_diagnostic_data_json_string = json.dumps(ihealth_diagnostic_data_dict, indent=4)
-        with open(filename_string, 'w') as output_file:
-            output_file.write(ihealth_diagnostic_data_json_string)
+        for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
+            ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id)
+            filename_string = f'./{ihealth_diagnostic_data_dict["system_information"]["hostname"]}_diag_data.json'
+            # No need to parse out - backup entire response
+            ihealth_diagnostic_data_json_string = json.dumps(ihealth_diagnostic_data_dict, indent=4)
+            with open(filename_string, 'w') as output_file:
+                output_file.write(ihealth_diagnostic_data_json_string)
