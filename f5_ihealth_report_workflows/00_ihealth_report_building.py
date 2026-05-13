@@ -188,7 +188,8 @@ def upload_directory_files_to_ihealth(token, directory:str):
 
 def parse_qkview_xml(xmlfile):
     """
-    ParsesXML x
+    ParsesXML data from ihealth qkview upload.
+    Returns dict with: ihealth_id, gui_uri, diagnostics, commands, bigip
     """
 
     # create element tree object
@@ -247,19 +248,42 @@ if __name__ == "__main__":
             print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
             time.sleep(1800)
 
-    # TODO: Work on collecting results id list
-    f5_ihealth_qkview_id_list = [
-        "00000000",
-        "00000001"
-    ]
+            # TODO: Work on collecting results id list
+            f5_ihealth_qkview_id_list = [ ]
+            for qkview_report in results_dict:
+                # id_value = qkview_report['ihealth_id']
+                f5_ihealth_qkview_id_list.append(qkview_report['ihealth_id'])
+            filename_string = './qkview_id_list.json'
+            f5_ihealth_qkview_id_data_json_string = json.dumps(f5_ihealth_qkview_id_list, indent=4)
+            with open(filename_string, 'w') as output_file:
+                output_file.write(f5_ihealth_qkview_id_data_json_string)
+    else:
+
+        # Try to Load List from existing file
+        try:
+            # Example list
+            # f5_ihealth_qkview_id_list = [ "26218976", "26218972"]
+            f5_ihealth_qkview_id_list = [ ]
+            filename_string = './qkview_id_list.json'
+            with open(filename_string, 'r') as input_file:
+                qkview_id_list = json.load(input_file)
+                for item_in_list in qkview_id_list:
+                    f5_ihealth_qkview_id_list.append(item_in_list)
+        except FileNotFoundError:
+            print('Fail to read file - ' + filename_string + ' : Was there a qkview_id_list.json present in your working directory?')
+
 
     # Download Report if chosen
     if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
 
-        for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
-            ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id)
-            filename_string = f'./{ihealth_diagnostic_data_dict["system_information"]["hostname"]}_diag_data.json'
-            # No need to parse out - backup entire response
-            ihealth_diagnostic_data_json_string = json.dumps(ihealth_diagnostic_data_dict, indent=4)
-            with open(filename_string, 'w') as output_file:
-                output_file.write(ihealth_diagnostic_data_json_string)
+        # Check if f5_ihealth_qkview_id_list is defined
+        if not (f5_ihealth_qkview_id_list):
+            print('Unable to collect report - No Qkview ID list available')
+        else:
+            for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
+                ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id)
+                filename_string = f'./{ihealth_diagnostic_data_dict["system_information"]["hostname"]}_diag_data.json'
+                # No need to parse out - backup entire response
+                ihealth_diagnostic_data_json_string = json.dumps(ihealth_diagnostic_data_dict, indent=4)
+                with open(filename_string, 'w') as output_file:
+                    output_file.write(ihealth_diagnostic_data_json_string)
