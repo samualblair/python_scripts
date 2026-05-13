@@ -234,7 +234,7 @@ if __name__ == "__main__":
     # Navigating to the settings page, and generating a Client ID and Client Secret by clicking the relevant button.
 
     user = input('Please enter iHealth API Username - This should be API Specific not normal Web Username \n')
-    password = input('Please enter iHealth API Password - This should be API Specific not normal Web Username \n')
+    password = input('Please enter iHealth API Password - This should be API Specific not normal Web Password \n')
     server_cert_ca_location = input('Please enter CA location for iHealth\n')
 
 
