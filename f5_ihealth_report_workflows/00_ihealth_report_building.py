@@ -7,6 +7,7 @@ import json
 import time
 # import sys
 # import csv
+import xml.etree.ElementTree as ET
 
 # Requests option
 import requests
@@ -140,10 +141,13 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
     # Looks like response can come in xml
     # qkview.gui_uri
 
-    # Arbitrary 1 second wait to ensure access token is in effect prior to other API calls
+    access_upload_results_parsed = parse_qkview_xml(access_upload_results)
+
+
+    # Arbitrary 1 second wait to no try and upload to fast
     time.sleep(1)
 
-    return(access_upload_results)
+    return(access_upload_results_parsed)
 
 
 def upload_directory_files_to_ihealth(token, directory:str):
@@ -179,8 +183,44 @@ def upload_directory_files_to_ihealth(token, directory:str):
                         print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
     except IndexError:
         print('Issue with file - ' + file_name)
-    
+
     return(upload_results)
+
+def parse_qkview_xml(xmlfile):
+    """
+    ParsesXML x
+    """
+
+    # create element tree object
+    tree = ET.parse(xmlfile)
+
+    # get root element
+    root = tree.getroot()
+
+    # holding dict
+    qkview_info = {}
+
+    # iterate items
+    for item in root.findall('./'):
+
+        # print(item.tag)
+        if item.tag == 'gui_uri':
+            qkview_info[item.tag] = item.text.encode('utf8')
+        if item.tag == 'diagnostics':
+            qkview_info[item.tag] = item.text.encode('utf8')
+        if item.tag == 'files':
+            qkview_info[item.tag] = item.text.encode('utf8')
+        if item.tag == 'commands':
+            qkview_info[item.tag] = item.text.encode('utf8')
+        if item.tag == 'bigip':
+            qkview_info[item.tag] = item.text.encode('utf8')
+    
+    qkview_info['ihealth_id'] = qkview_info['gui_uri'][42:]
+
+    # return xml items
+    return qkview_info
+
+
 
 if __name__ == "__main__":
 
@@ -202,6 +242,10 @@ if __name__ == "__main__":
     # Submit Report if chosen
     if (ihealth_operation_chosen == "1_submit") or (ihealth_operation_chosen == "all"):
         results_dict = upload_directory_files_to_ihealth(login_token, base_directory)
+
+        if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
+            print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
+            time.sleep(1800)
 
     # TODO: Work on collecting results id list
     f5_ihealth_qkview_id_list = [
