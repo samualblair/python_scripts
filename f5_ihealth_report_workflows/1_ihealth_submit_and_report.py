@@ -30,7 +30,7 @@ def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_
     # response = requests.request("GET", url, headers=headers, verify=server_cert_ca_location)
     response = requests.request("GET", url, headers=headers)
     
-    print(f"The response code was: {response.status_code}")
+    print(f"The GET diagnostics response code was: {response.status_code}")
     # print(response.text)
 
     # To load response as object
@@ -83,7 +83,7 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
     # else:    
     #     print(f"The response code was: {response.status_code}")
 
-    print(f"The response code was: {response.status_code}")
+    print(f"The API Login response code was: {response.status_code}")
 
     # print(response.text)
     response_json = response.json()
@@ -129,10 +129,10 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
     response = requests.request(
         "POST", url, headers=headers, data=payload, files=files)
 
-    print(f"The response code was: {response.status_code}")
+    print(f"The QKview upload response code was: {response.status_code}")
 
     # Need to work on response
-    print(response.text)
+    # print(response.text)
     #response_json = response.json()
     #access_upload_results = response_json["access_token"]
     access_upload_results = response.text
@@ -186,17 +186,27 @@ def upload_directory_files_to_ihealth(token, directory:str):
 
     return(upload_results)
 
-def parse_qkview_xml(xmlfile):
+def parse_qkview_xml(xml_var):
     """
     ParsesXML data from ihealth qkview upload.
     Returns dict with: ihealth_id, gui_uri, diagnostics, commands, bigip
     """
 
-    # create element tree object
-    tree = ET.parse(xmlfile)
+    # Option 1a
+    # # create element tree object from File
+    # tree = ET.parse(xml_var)
 
-    # get root element
-    root = tree.getroot()
+    # Option 2a
+    # # Create element tree object from string
+    # tree = ET.ElementTree(ET.fromstring(xml_var))
+
+    # Option 1b and 2b
+    # # get root element
+    # root = tree.getroot()
+
+    # Option 3
+    # Create root from string directly
+    root = ET.fromstring(xml_var)
 
     # holding dict
     qkview_info = {}
@@ -245,18 +255,22 @@ if __name__ == "__main__":
         results_dict = upload_directory_files_to_ihealth(login_token, base_directory)
 
         if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
-            print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
-            time.sleep(1800)
-
-            # TODO: Work on collecting results id list
+            # Collect and save list of of ihealth ids
             f5_ihealth_qkview_id_list = [ ]
             for qkview_report in results_dict:
-                # id_value = qkview_report['ihealth_id']
-                f5_ihealth_qkview_id_list.append(qkview_report['ihealth_id'])
+                # Convert to binary string to ascii string first
+                binary_string_id_value = results_dict[qkview_report]['ihealth_id']
+                id_value = binary_string_id_value.decode('ascii')
+                f5_ihealth_qkview_id_list.append(id_value)
             filename_string = './qkview_id_list.json'
             f5_ihealth_qkview_id_data_json_string = json.dumps(f5_ihealth_qkview_id_list, indent=4)
             with open(filename_string, 'w') as output_file:
                 output_file.write(f5_ihealth_qkview_id_data_json_string)
+            
+            if (ihealth_operation_chosen == "all"):
+                # Wait before attempting to pull report - gives time for iHealth to be processed
+                print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
+                time.sleep(1800)
     else:
 
         # Try to Load List from existing file

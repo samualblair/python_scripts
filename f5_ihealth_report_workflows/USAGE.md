@@ -35,7 +35,7 @@ Regarding selection:
 
 ```bash
 # run script , and call current folder
-python3.14 "1_ihealth_submit_and_report.py"
+python 1_ihealth_submit_and_report.py
 Please enter your selection - Submit QKview to iHealth or Obtain report ( all , 1_submit , 2_report )
 all
 Please enter folder name to parse QKview files recursively and/or Store Reports in (HINT: may navigate back a folder with ../FOLDERNAME )
@@ -46,6 +46,12 @@ Please enter iHealth API Password - This should be API Specific not normal Web P
 # OMITTED - iHealth API Password Here
 Please enter CA location for iHealth
 ./account-f5-com-chain.pem
+The response code was: 200
+Uploading to ihealth: ../qkview_folder/bigip_primary_05132026.qkview
+The response code was: 202
+Uploading to ihealth: ../qkview_folder/bigip_secondary_05132026.qkview
+The response code was: 202
+Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process
 
 # While running some response codes are shown, and a notification if waiting after submission before report retrieval if selection all was made
 # When finished current working folder should have a file 'qkview_id_list.json' created if selection all or 1_submit was made
