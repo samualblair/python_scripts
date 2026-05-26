@@ -101,10 +101,10 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
     """
 
     print('Uploading to ihealth: ' + qkview_file)
-    ihealth_visible_in_gui = ''
-    ihealth_description = ''
-    ihealth_f5_support_case = ''
-    ihealth_share_with_case_owner = ''
+    # ihealth_visible_in_gui = ''
+    # ihealth_description = ''
+    # ihealth_f5_support_case = ''
+    # ihealth_share_with_case_owner = ''
     
 
     url = 'https://ihealth2-api.f5.com/qkview-analyzer/api/qkviews'
@@ -235,42 +235,97 @@ def parse_qkview_xml(xml_var):
 
 if __name__ == "__main__":
 
-    ihealth_operation_chosen = input('Please enter your selection - Submit QKview to iHealth or Obtain report ( all , 1_submit , 2_report ) \n')
+    load_settings_parameters = input('Do you want to load parameters from json file f5_ihealth_parameters.json (Please enter: yes , no)\n')
+    load_parameters_question_count = 0
+    while load_parameters_question_count < 3:
+        if load_settings_parameters == "yes":
+            load_parameters_question_count = 3
+        elif load_settings_parameters == "no":
+            load_parameters_question_count = 3
+        else:
+            if load_parameters_question_count < 2:
+                print("Invalid answer, please enter exactly: yes , no")
+                load_settings_parameters = input('Do you want to load parameters from json file f5_ihealth_parameters.json (Please enter: yes , no)\n')
+            elif load_parameters_question_count == 2:
+                print("Still Invalid answer, Proceeding to not load settings")
+                load_settings_parameters = "no"
+            load_parameters_question_count += 1
 
-    # Assign base directory - For parsing QkView Files and storing reports
-    base_directory = input('Please enter folder name to parse QKview files recursively and/or Store Reports in (HINT: may navigate back a folder with ../FOLDERNAME )\n')
+    # Proceed obtain password and load all other parameters
+    if load_settings_parameters == "yes":
 
-    # USER CAN BE CREATED at https://account.f5.com/ihealth2 or https://account.f5.com/ihealth
-    # Navigating to the settings page, and generating a Client ID and Client Secret by clicking the relevant button.
+        load_dic = {}
+        filename_string = './f5_ihealth_parameters.json'
+        with open(filename_string, 'r') as input_file:
+            load_dic = json.load(input_file)
 
-    user = input('Please enter iHealth API Username - This should be API Specific not normal Web Username \n')
-    password = input('Please enter iHealth API Password - This should be API Specific not normal Web Password \n')
-    server_cert_ca_location = input('Please enter CA location for iHealth\n')
+        # ihealth_operation_chosen = load_dic['ihealth_operation_chosen']
+        base_directory = load_dic['base_directory']
+        user = load_dic['user']
+        server_cert_ca_location = load_dic['server_cert_ca_location']
+        print('Loaded Parameters from json :')
+        # print('ihealth_operation_chosen = ' + str(ihealth_operation_chosen))
+        print('base_directory = ' + str(base_directory))
+        print('user = ' + str(user))
+        print('server_cert_ca_location = ' + str(server_cert_ca_location))
+        password = input('Please enter iHealth API Password - This should be API Specific not normal Web Password \n')
+        ihealth_operation_chosen = input('Please Chose your selection - Submit QKview to iHealth or Obtain report ( all , 1_submit , 2_report ) \n')
 
 
+    # Proceed to obtain all parameters
+    elif load_settings_parameters == "no":
+        ihealth_operation_chosen = input('Please enter your selection - Submit QKview to iHealth or Obtain report ( all , 1_submit , 2_report ) \n')
+
+        # Assign base directory - For parsing QkView Files and storing reports
+        base_directory = input('Please enter folder name to parse QKview files recursively and/or Store Reports in (HINT: may navigate back a folder with ../FOLDERNAME )\n')
+
+        # USER CAN BE CREATED at https://account.f5.com/ihealth2 or https://account.f5.com/ihealth
+        # Navigating to the settings page, and generating a Client ID and Client Secret by clicking the relevant button.
+
+        user = input('Please enter iHealth API Username - This should be API Specific not normal Web Username \n')
+        password = input('Please enter iHealth API Password - This should be API Specific not normal Web Password \n')
+        server_cert_ca_location = input('Please enter CA location for iHealth\n')
+
+    # Initial Login
     login_token = f5_ihealth_api_login(user,password,server_cert_ca_location)
+
+    save_settings_parameters = "yes"
+    if save_settings_parameters == "yes":
+        # Save non-secure (not password) parameters to file for easy re-use
+        f5_ihealth_parameters = {}
+        f5_ihealth_parameters["ihealth_operation_chosen"] = ihealth_operation_chosen
+        f5_ihealth_parameters["base_directory"] = base_directory
+        f5_ihealth_parameters["user"] = user
+        f5_ihealth_parameters["server_cert_ca_location"] = server_cert_ca_location
+
+        f5_ihealth_parameters_json_string = json.dumps(f5_ihealth_parameters, indent=4)
+        filename_string = './f5_ihealth_parameters.json'
+        with open(filename_string, 'w') as output_file:
+            output_file.write(f5_ihealth_parameters_json_string)
+
 
     # Submit Report if chosen
     if (ihealth_operation_chosen == "1_submit") or (ihealth_operation_chosen == "all"):
         results_dict = upload_directory_files_to_ihealth(login_token, base_directory)
+        # Save Results ID List results id list
+        f5_ihealth_qkview_id_list = [ ]
+        for qkview_report in results_dict:
+            # Convert to binary string to ascii string first
+            binary_string_id_value = results_dict[qkview_report]['ihealth_id']
+            id_value = binary_string_id_value.decode('ascii')
+            f5_ihealth_qkview_id_list.append(id_value)
+        filename_string = './qkview_id_list.json'
+        f5_ihealth_qkview_id_data_json_string = json.dumps(f5_ihealth_qkview_id_list, indent=4)
+        with open(filename_string, 'w') as output_file:
+            output_file.write(f5_ihealth_qkview_id_data_json_string)
 
-        if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
-            # Collect and save list of of ihealth ids
-            f5_ihealth_qkview_id_list = [ ]
-            for qkview_report in results_dict:
-                # Convert to binary string to ascii string first
-                binary_string_id_value = results_dict[qkview_report]['ihealth_id']
-                id_value = binary_string_id_value.decode('ascii')
-                f5_ihealth_qkview_id_list.append(id_value)
-            filename_string = './qkview_id_list.json'
-            f5_ihealth_qkview_id_data_json_string = json.dumps(f5_ihealth_qkview_id_list, indent=4)
-            with open(filename_string, 'w') as output_file:
-                output_file.write(f5_ihealth_qkview_id_data_json_string)
-            
-            if (ihealth_operation_chosen == "all"):
-                # Wait before attempting to pull report - gives time for iHealth to be processed
-                print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
-                time.sleep(1800)
+        # Catch when submitting and processing - wait for processing and re-login after waiting
+        if ihealth_operation_chosen == "all":
+            print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
+            time.sleep(1800)
+            # Update Login after 30min sleep
+            login_token = f5_ihealth_api_login(user,password,server_cert_ca_location)
+
     else:
 
         # Try to Load List from existing file
@@ -289,6 +344,8 @@ if __name__ == "__main__":
 
     # Download Report if chosen
     if (ihealth_operation_chosen == "2_report") or (ihealth_operation_chosen == "all"):
+
+        # TODO: Build in 401 login error catch, and login again if required at least 1 retry or based on login token time tracking
 
         # Check if f5_ihealth_qkview_id_list is defined
         if not (f5_ihealth_qkview_id_list):
