@@ -1,13 +1,13 @@
 # Created by: Michael Johnson - 04-27-2025
 # Parsing code to extract big-ip configurations and certs from archives
+
 import os
-# import json
-# import pprint
 import subprocess
+
 
 def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> None:
     """
-    Extracts Config Files fand Certificates from bigip archive - qkview, ucs, generic tar.gz
+    Extracts Config Files and Certificates from bigip archive - qkview, ucs, generic tar.gz
     """
     # subcommand = f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
     # subprocess.run(subcommand)
@@ -20,7 +20,7 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_l
     # Must convert byte recorded output into string output to use in normal string manner
     config_files_sting = config_files_sting_byte.decode('UTF-8')    
 
-    # Parse out each line, but ignore the last charachter as it will just be a single new line
+    # Parse out each line, but ignore the last character as it will just be a single new line
     string_list = config_files_sting[0:len(config_files_sting)-1].split("\n")
     # print(string_list)
 

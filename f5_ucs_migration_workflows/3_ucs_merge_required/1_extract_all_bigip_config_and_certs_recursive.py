@@ -1,15 +1,12 @@
 # Created by: Michael Johnson - 04-27-2025
 # Parsing code to extract big-ip configurations and certs from archives
 import os
-# import json
-# import pprint
 import subprocess
 
-# subprocess.run(["ls", "-l"]) 
 
 def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> None:
     """
-    Extracts Config Files fand Certificates from bigip archive - qkview, ucs, generic tar.gz
+    Extracts Config Files and Certificates from bigip archive - qkview, ucs, generic tar.gz
     """
     # subcommand = f'tar -tzf {bigip_conf_filename}| grep "bigip\\.conf" | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
     # subprocess.run(subcommand)
@@ -22,34 +19,32 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_l
     # Must convert byte recorded output into string output to use in normal string manner
     config_files_sting = config_files_sting_byte.decode('UTF-8')    
 
-    # Parse out each line, but ignore the last charachter as it will just be a single new line
+    # Parse out each line, but ignore the last character as it will just be a single new line
     string_list = config_files_sting[0:len(config_files_sting)-1].split("\n")
     # print(string_list)
 
+    # Calculate the output directory once - based off first filename as-is expecting path to be included if needed
+    output_dir = f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked'
+
     try:
-        # Take current filename as-is expecting path to be included if needed
-        os.mkdir(f'{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
+        # Create folder if required
+        os.mkdir(output_dir)
     except FileExistsError:
         # Notify that folder already existed
-        print(f'Folder already existed - {bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked')
+        print(f'Folder already existed - {output_dir}')
 
-    for config_tar_file_path in string_list:
-        # Take current filename as-is expecting path to be included if needed
-        sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{bigip_conf_filename[0:len(bigip_conf_filename)-file_extension_length]}_unpacked" "{config_tar_file_path}"'
-        subprocess.run(sub_command, shell=True)
+    # Join the list of filenames into a single string, quoting each to handle potential spaces in string
+    files_string = " ".join(f'"{file_element}"' for file_element in string_list)
 
-        
-        #subprocess.run(f'tar -xzf {bigip_conf_filename} -C "unpacked_{bigip_conf_filename[2:len(bigip_conf_filename)]}" "{config_tar_file_path}"', shell=True)
+    # Construct the single tar command and execute once
+    sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{output_dir}" {files_string}'
+    subprocess.run(sub_command, shell=True)
 
-    # f'tar -xzf "{bigip_conf_filename}" -C "unpacked_{bigip_conf_filename}" "config/partitions/EAS-PROD/bigip.conf"'
-
-    # with open(bigip_conf_filename, 'r') as archive_file:
-    #     # subprocess.run(["ls", "-l"]) 
-    #     print(archive_file)
-    #     # subcommand = f'tar -tzf {archive_file.name}| grep bigip.conf | grep -v -E "\\.diffVersions|\\.bak|openvswitch"'
-    #     # subprocess.run(subcommand)
-
-
+    # No need to loop through strings
+    # for config_tar_file_path in string_list:
+    #     # Take current filename as-is expecting path to be included if needed
+    #     sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{output_dir}" "{config_tar_file_path}"'
+    #     subprocess.run(sub_command, shell=True)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,9 @@
 # Created by: Michael Johnson - 04-09-2025
 # Parsing code to update BigDB.dat file for UCS migration to VE
-import os
+
 import configparser
-from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
+import os
+from stat import S_IRGRP, S_IROTH, S_IRUSR, S_IWUSR
 
 
 def update_maxcores(bigdb_filename:str='BigDB.dat',file_extension_length:int=4) -> None:

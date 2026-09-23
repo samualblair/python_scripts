@@ -1,9 +1,11 @@
 # Created by: Michael Johnson - 04-25-2025
 # Parsing code to extract big-ip ucs, update bigdbdat file, but do not rearchive
+
+import configparser
 import os
 import subprocess
-import configparser
-from stat import S_IRUSR, S_IRGRP, S_IROTH, S_IWUSR
+from stat import S_IRGRP, S_IROTH, S_IRUSR, S_IWUSR
+
 
 def extract_bigip_archive(bigip_conf_filename:str='support.qkview',file_extension_length:int=7) -> str:
     """
