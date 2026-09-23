@@ -2,9 +2,10 @@
 # Scripts to upload QKview file(s) to iHealth, pull information for iHealth and customize report data
 
 # import required modules
-import os
 import json
+import os
 import time
+
 # import sys
 # import csv
 import xml.etree.ElementTree as ET
