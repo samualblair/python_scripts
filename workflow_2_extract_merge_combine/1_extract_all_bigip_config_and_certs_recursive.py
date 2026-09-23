@@ -34,12 +34,12 @@ def extract_bigip_conf(bigip_conf_filename:str='support.qkview',file_extension_l
         # Notify that folder already existed
         print(f'Folder already existed - {output_dir}')
 
-        # Join the list of filenames into a single string, quoting each to handle potential spaces in string
-        files_string = " ".join(f'"{file_element}"' for file_element in string_list)
+    # Join the list of filenames into a single string, quoting each to handle potential spaces in string
+    files_string = " ".join(f'"{file_element}"' for file_element in string_list)
 
-        # Construct the single tar command and execute once
-        sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{output_dir}" {files_string}'
-        subprocess.run(sub_command, shell=True)
+    # Construct the single tar command and execute once
+    sub_command = f'tar -xzf "{bigip_conf_filename}" -C "{output_dir}" {files_string}'
+    subprocess.run(sub_command, shell=True)
 
     # No need to loop through strings
     # for config_tar_file_path in string_list:
