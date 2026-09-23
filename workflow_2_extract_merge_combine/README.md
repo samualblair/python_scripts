@@ -156,6 +156,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2026.09.23 - Optimization - extracting certs now performs single tar based operation rather than looped python tar calls
 * 2025.04.27 - BugFix - Added additional escaping fixes - refactored cleanup script around find
 * 2025.04.21 - BugFix - Enclosed filepath/name in quotes to allow for space and other special characters
 * 2025.04.17 - Added Script for extract, modify BigDB.dat, and re-archive script

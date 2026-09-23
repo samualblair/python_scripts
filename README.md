@@ -30,7 +30,7 @@ Continue to parse previous output and output no SNAT details summary
 
 Extracts F5 configuration and Certificates from F5 Qkview, UCS, or generic tar.gz file.
 
-Modifes BigDB.dat files to support VE licensing.
+Modifies BigDB.dat files to support VE licensing.
 
 Organize and assist with merging.
 
@@ -69,6 +69,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2026.09.23 - Optimized tar usage - Workflow 2 and F5 UCS workflow 3 when extracting certs and configs
 * 2026.05.13 - Updated iHealth QKview reporting workflow
 * 2026.03.17 - Updated NS to BIG-IP workflow and AS3 parsing - added F5 Flipper JSON to AS3 and NS Lines mass export parsing script
 * 2026.03.05 - Updated NS to BIG-IP workflow and AS3 parsing - scripts for clean up of nodes and tcp profiles
