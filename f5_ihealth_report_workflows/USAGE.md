@@ -20,6 +20,15 @@ Navigating to the settings page, and generating a Client ID and Client Secret by
 
 When running the script the user will be prompted to Assign base directory - For parsing QkView Files and storing reports. The script will find all *.QKview files in that folder and upload each of them. They will also be requested to provide a path for the CA (Certificate Authority / CA Bundle used to validate HTTPS connection is secure) - NOTE: Currently the CA check is not enabled so this value is ignored. 
 
+Two Options for Easily Obtain Trusted CA Before Running Script
+```bash
+# Obtain Mozilla trusted CA Store - will save as file 'mozilla_ca_roots.pem'
+curl --location "https://ccadb.my.salesforce-sites.com/mozilla/IncludedRootsPEMTxt?TrustBitsInclude=Websites" > mozilla_ca_roots.pem
+
+# Or Use OpenSSL to grab the certs offered directly from the ihealth.f5.com servers - will save as file 'ihealth_certs.pem'
+openssl s_client -showcerts -connect ihealth.f5.com:443 2>/dev/null </dev/null | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' > ihealth_certs.pem
+```
+
 User is provided the following prompts:
    - Please enter your selection - Submit QKview to iHealth or Obtain report ( all , 1_submit , 2_report )
    - Please enter folder name to parse QKview files recursively and/or Store Reports in (HINT: may navigate back a folder with ../FOLDERNAME )
