@@ -1,21 +1,23 @@
 # Created by: Michael Johnson - 10-15-2025
 # Scripts to upload QKview file(s) to iHealth, pull information for iHealth and customize report data
 
+# /// script
+# requires-python = ">=3.15"
+# dependencies = [
+#     "requests>=2.34.2",
+# ]
+# ///
+
 # import required modules
 import json
 import os
+import requests
+import sys
 import time
-
-# import sys
-# import csv
 import xml.etree.ElementTree as ET
 
-# Requests option
-import requests
 
-
-
-def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_id:str) -> dict:
+def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_id:str, ca_cert:str) -> dict:
     """
     Logs into ihealth api , obtains diagnostics data in JSON format and returns as a dictionary
     """
@@ -27,9 +29,10 @@ def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_
         'Authorization': f'Bearer {f5_ihealth_token}'
     }
 
-    # TODO: Identify proper CA cert for verification
-    # response = requests.request("GET", url, headers=headers, verify=server_cert_ca_location)
-    response = requests.request("GET", url, headers=headers)
+    # TODO: Catch Certificate Error and close more gracefully
+    response = requests.request("GET", url, headers=headers, verify=ca_cert)
+    # TODO: Add option to bypass CA validation if required
+    # response = requests.request("GET", url, headers=headers)
     
     print(f"The GET diagnostics response code was: {response.status_code}")
     # print(response.text)
@@ -62,13 +65,14 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
         'Accept': 'application/json',
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    
-    # TODO: Identify proper CA cert for verification
-    # response = requests.request(
-    #     "POST", url, headers=headers, data=payload, verify=ca_cert, auth=(f5_ihealth_user, f5_ihealth_pass))
-    
+
+    # TODO: Catch Certificate Error and close more gracefully
     response = requests.request(
-        "POST", url, headers=headers, data=payload, auth=(f5_ihealth_user, f5_ihealth_pass))
+        "POST", url, headers=headers, data=payload, verify=ca_cert, auth=(f5_ihealth_user, f5_ihealth_pass))
+
+    # TODO: Add option to bypass CA validation if required
+    # response = requests.request(
+    #     "POST", url, headers=headers, data=payload, auth=(f5_ihealth_user, f5_ihealth_pass))
 
     # TODO: Add Custom logic for highlighting expected errors or API rate limiting
     # if response.status_code == 429:
@@ -77,7 +81,7 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
     #     time.sleep(10)
     #     print("Continuing...and Trying Again")
     #     response = requests.request(
-    #         "POST", url, headers=headers, data=payload, verify=server_cert_ca_location)
+    #         "POST", url, headers=headers, data=payload, verify=ca_cert)
 
     # if response.status_code == 409:
     #     print(f"The Object Probably Already Existed - The response code was: {response.status_code}")
@@ -96,7 +100,7 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
     return(access_token)
 
 
-def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_name:str):
+def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_name:str, ca_cert:str):
     """
     Uploads a QKview file to iHealth
     """
@@ -122,13 +126,14 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
         'Accept': 'application/vnd.f5.ihealth.api',
         'Authorization': f'Bearer {f5_ihealth_token}'
     }
-    
-    # TODO: Identify proper CA cert for verification
-    # response = requests.request(
-    #     "POST", url, headers=headers, data=payload, verify=ca_cert)
-    
+
+    # TODO: Catch Certificate Error and close more gracefully
     response = requests.request(
-        "POST", url, headers=headers, data=payload, files=files)
+        "POST", url, headers=headers, data=payload, files=files, verify=ca_cert)
+
+    # TODO: Add option to bypass CA validation if required
+    # response = requests.request(
+    #     "POST", url, headers=headers, data=payload, files=files)
 
     print(f"The QKview upload response code was: {response.status_code}")
 
@@ -171,17 +176,21 @@ def upload_directory_files_to_ihealth(token, directory:str):
     # print(sys.argv[1])
     try:
         for folder_name in recursive_folder_list:
-            for file_name in os.listdir(folder_name):
-                file_contents = os.path.join(folder_name, file_name)
-                # checking if it is a file
-                if os.path.isfile(file_contents):
-                    try:
-                        # Only try to parse file if it is name ends with .json
-                        if file_name[-7:] == ".qkview":
-                            upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name)
-                    # Catch when file is not parsable UTF 8 or similar
-                    except UnicodeDecodeError:
-                        print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
+            try:
+                for file_name in os.listdir(folder_name):
+                    file_contents = os.path.join(folder_name, file_name)
+                    # checking if it is a file
+                    if os.path.isfile(file_contents):
+                        try:
+                            # Only try to parse file if it is name ends with .json
+                            if file_name[-7:] == ".qkview":
+                                upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name, server_cert_ca_location)
+                        # Catch when file is not parsable UTF 8 or similar
+                        except UnicodeDecodeError:
+                            print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
+            except FileNotFoundError:
+                print('ERROR - Folder was not found - are you sure this is the correct path? \n' + folder_name)
+                sys.exit()
     except IndexError:
         print('Issue with file - ' + file_name)
 
@@ -239,9 +248,7 @@ if __name__ == "__main__":
     load_settings_parameters = input('Do you want to load parameters from json file f5_ihealth_parameters.json (Please enter: yes , no)\n')
     load_parameters_question_count = 0
     while load_parameters_question_count < 3:
-        if load_settings_parameters == "yes":
-            load_parameters_question_count = 3
-        elif load_settings_parameters == "no":
+        if load_settings_parameters == "yes" or load_settings_parameters == "no":
             load_parameters_question_count = 3
         else:
             if load_parameters_question_count < 2:
@@ -288,7 +295,7 @@ if __name__ == "__main__":
         server_cert_ca_location = input('Please enter CA location for iHealth\n')
 
     # Initial Login
-    login_token = f5_ihealth_api_login(user,password,server_cert_ca_location)
+    login_token = f5_ihealth_api_login(user, password, server_cert_ca_location)
 
     save_settings_parameters = "yes"
     if save_settings_parameters == "yes":
@@ -325,7 +332,7 @@ if __name__ == "__main__":
             print('Sleeping for 30 minutes prior to attempting to retrieve results - they need time to process')
             time.sleep(1800)
             # Update Login after 30min sleep
-            login_token = f5_ihealth_api_login(user,password,server_cert_ca_location)
+            login_token = f5_ihealth_api_login(user, password, server_cert_ca_location)
 
     else:
 
@@ -353,7 +360,7 @@ if __name__ == "__main__":
             print('Unable to collect report - No Qkview ID list available')
         else:
             for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
-                ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id)
+                ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id, server_cert_ca_location)
                 filename_string = f'./{ihealth_diagnostic_data_dict["system_information"]["hostname"]}_diag_data.json'
                 # No need to parse out - backup entire response
                 ihealth_diagnostic_data_json_string = json.dumps(ihealth_diagnostic_data_dict, indent=4)

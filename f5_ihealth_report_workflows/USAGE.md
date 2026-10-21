@@ -11,6 +11,11 @@ This workflow will have a few steps
 
 ## Usage Example for Script 1 - 1_ihealth_submit_and_report : 
 
+### Quick run if uv is installed
+```bash
+uv run 1_ihealth_submit_and_report.py
+```
+
 ### Script 1 Overview - 1_ihealth_submit_and_report : 
 Covers Steps 3 & 4 in the workflow.
 
@@ -18,7 +23,7 @@ Users will need iHealth API credentials to upload.
 A User can be created at iHealth page [ihealth2](https://account.f5.com/ihealth2) or [ihealth](https://account.f5.com/ihealth).
 Navigating to the settings page, and generating a Client ID and Client Secret by clicking the relevant button.
 
-When running the script the user will be prompted to Assign base directory - For parsing QkView Files and storing reports. The script will find all *.QKview files in that folder and upload each of them. They will also be requested to provide a path for the CA (Certificate Authority / CA Bundle used to validate HTTPS connection is secure) - NOTE: Currently the CA check is not enabled so this value is ignored. 
+When running the script the user will be prompted to Assign base directory - For parsing QkView Files and storing reports. The script will find all *.QKview files in that folder and upload each of them. They will also be requested to provide a path for the CA (Certificate Authority / CA Bundle used to validate HTTPS connection is secure).
 
 Two Options for Easily Obtain Trusted CA Before Running Script
 ```bash

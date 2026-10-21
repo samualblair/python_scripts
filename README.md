@@ -69,6 +69,7 @@ Michael Johnson ([@samualblair](https://github.com/samualblair))
 ## Versioning
 [![CalVer](https://img.shields.io/static/v1?label=CalVer&message=YY.0M.0D)](https://calver.org/)
 
+* 2026.10.21 - Updated f5_ihealth_report_workflows - proper TLS certificate validation now performed
 * 2026.09.23 - Optimized tar usage - Workflow 2 and F5 UCS workflow 3 when extracting certs and configs
 * 2026.05.13 - Updated iHealth QKview reporting workflow
 * 2026.03.17 - Updated NS to BIG-IP workflow and AS3 parsing - added F5 Flipper JSON to AS3 and NS Lines mass export parsing script
