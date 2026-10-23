@@ -11,10 +11,11 @@
 # import required modules
 import json
 import os
-import requests
 import sys
 import time
 import xml.etree.ElementTree as ET
+
+import requests
 
 
 def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_id:str, ca_cert:str) -> dict:
@@ -29,8 +30,16 @@ def f5_ihealth_api_get_diagnostics_json(f5_ihealth_token:str, f5_ihealth_qkview_
         'Authorization': f'Bearer {f5_ihealth_token}'
     }
 
-    # TODO: Catch Certificate Error and close more gracefully
-    response = requests.request("GET", url, headers=headers, verify=ca_cert)
+    # Catches Certificate Error and close more gracefully
+    try: 
+        response = requests.request("GET", url, headers=headers, verify=ca_cert)
+    except requests.exceptions.SSLError as err_message :
+        print(f'SSL Error During Report Pull Attempt - Reason: {err_message}\n')
+        sys.exit()
+    except requests.exceptions.RequestException as err_message:
+        print(f'Other RequestException: {err_message}')
+        sys.exit()
+
     # TODO: Add option to bypass CA validation if required
     # response = requests.request("GET", url, headers=headers)
     
@@ -66,9 +75,18 @@ def f5_ihealth_api_login(f5_ihealth_user:str, f5_ihealth_pass:str, ca_cert:str) 
         'Content-Type': 'application/x-www-form-urlencoded'
     }
 
-    # TODO: Catch Certificate Error and close more gracefully
-    response = requests.request(
-        "POST", url, headers=headers, data=payload, verify=ca_cert, auth=(f5_ihealth_user, f5_ihealth_pass))
+    # Catch Certificate Error and close more gracefully - but POST seems to never error even on invalid cert CA
+    # May be that POST uses urllib3 and built-in ca trust
+    try:
+        response = requests.request(
+            "POST", url, headers=headers, data=payload, verify=ca_cert, auth=(f5_ihealth_user, f5_ihealth_pass))
+    except requests.exceptions.SSLError as err_message :
+        print(f'SSL Error During Login Attempt - Reason: {err_message}\n')
+        sys.exit()
+    except requests.exceptions.RequestException as err_message:
+        print(f'Other RequestException: {err_message}')
+        sys.exit()
+
 
     # TODO: Add option to bypass CA validation if required
     # response = requests.request(
@@ -119,17 +137,26 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
         'f5_support_case': '',
         'share_with_case_owner': ''
     }
-    files = {
-        'qkview': (qkview_file_name, open(qkview_file,'rb'),'application/octet-stream') 
-    }
+    with open(qkview_file,'rb') as qkview_file_data :
+        files = {
+            'qkview': (qkview_file_name, qkview_file_data,'application/octet-stream') 
+        }
     headers = {
         'Accept': 'application/vnd.f5.ihealth.api',
         'Authorization': f'Bearer {f5_ihealth_token}'
     }
 
-    # TODO: Catch Certificate Error and close more gracefully
-    response = requests.request(
-        "POST", url, headers=headers, data=payload, files=files, verify=ca_cert)
+    # Catch Certificate Error and close more gracefully - but POST seems to never error even on invalid cert CA
+    # May be that POST uses urllib3 and built-in ca trust
+    try:
+        response = requests.request(
+            "POST", url, headers=headers, data=payload, files=files, verify=ca_cert)
+    except requests.exceptions.SSLError as err_message :
+        print(f'SSL Error During Upload Attempt - Reason: {err_message}\n')
+        sys.exit()
+    except requests.exceptions.RequestException as err_message:
+        print(f'Other RequestException: {err_message}')
+        sys.exit()
 
     # TODO: Add option to bypass CA validation if required
     # response = requests.request(
@@ -176,23 +203,22 @@ def upload_directory_files_to_ihealth(token, directory:str):
     # print(sys.argv[1])
     try:
         for folder_name in recursive_folder_list:
-            try:
-                for file_name in os.listdir(folder_name):
-                    file_contents = os.path.join(folder_name, file_name)
-                    # checking if it is a file
-                    if os.path.isfile(file_contents):
-                        try:
-                            # Only try to parse file if it is name ends with .json
-                            if file_name[-7:] == ".qkview":
-                                upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name, server_cert_ca_location)
-                        # Catch when file is not parsable UTF 8 or similar
-                        except UnicodeDecodeError:
-                            print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
-            except FileNotFoundError:
-                print('ERROR - Folder was not found - are you sure this is the correct path? \n' + folder_name)
-                sys.exit()
+            for file_name in os.listdir(folder_name):
+                file_contents = os.path.join(folder_name, file_name)
+                # checking if it is a file
+                if os.path.isfile(file_contents):
+                    try:
+                        # Only try to parse file if it is name ends with .json
+                        if file_name[-7:] == ".qkview":
+                            upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name, server_cert_ca_location)
+                    # Catch when file is not parsable UTF 8 or similar
+                    except UnicodeDecodeError:
+                        print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
     except IndexError:
         print('Issue with file - ' + file_name)
+    except FileNotFoundError:
+        print('ERROR - File or Folder was not found - are you sure this is the correct path? \n' + folder_name)
+        sys.exit()
 
     return(upload_results)
 
@@ -357,7 +383,7 @@ if __name__ == "__main__":
 
         # Check if f5_ihealth_qkview_id_list is defined
         if not (f5_ihealth_qkview_id_list):
-            print('Unable to collect report - No Qkview ID list available')
+            print('Unable to collect report - No QKview ID list available')
         else:
             for f5_ihealth_qkview_id in f5_ihealth_qkview_id_list:
                 ihealth_diagnostic_data_dict = f5_ihealth_api_get_diagnostics_json(login_token, f5_ihealth_qkview_id, server_cert_ca_location)
