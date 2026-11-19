@@ -141,22 +141,22 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
         files = {
             'qkview': (qkview_file_name, qkview_file_data,'application/octet-stream') 
         }
-    headers = {
-        'Accept': 'application/vnd.f5.ihealth.api',
-        'Authorization': f'Bearer {f5_ihealth_token}'
-    }
+        headers = {
+            'Accept': 'application/vnd.f5.ihealth.api',
+            'Authorization': f'Bearer {f5_ihealth_token}'
+        }
 
-    # Catch Certificate Error and close more gracefully - but POST seems to never error even on invalid cert CA
-    # May be that POST uses urllib3 and built-in ca trust
-    try:
-        response = requests.request(
-            "POST", url, headers=headers, data=payload, files=files, verify=ca_cert)
-    except requests.exceptions.SSLError as err_message :
-        print(f'SSL Error During Upload Attempt - Reason: {err_message}\n')
-        sys.exit()
-    except requests.exceptions.RequestException as err_message:
-        print(f'Other RequestException: {err_message}')
-        sys.exit()
+        # Catch Certificate Error and close more gracefully - but POST seems to never error even on invalid cert CA
+        # May be that POST uses urllib3 and built-in ca trust
+        try:
+            response = requests.request(
+                "POST", url, headers=headers, data=payload, files=files, verify=ca_cert)
+        except requests.exceptions.SSLError as err_message :
+            print(f'SSL Error During Upload Attempt - Reason: {err_message}\n')
+            sys.exit()
+        except requests.exceptions.RequestException as err_message:
+            print(f'Other RequestException: {err_message}')
+            sys.exit()
 
     # TODO: Add option to bypass CA validation if required
     # response = requests.request(
@@ -183,7 +183,7 @@ def upload_qkview_to_ihealth(f5_ihealth_token:str, qkview_file:str, qkview_file_
     return(access_upload_results_parsed)
 
 
-def upload_directory_files_to_ihealth(token, directory:str):
+def upload_directory_files_to_ihealth(token, directory:str, ca_cert:str):
     """
     Recursively finds QKview files and uploads to iHealth
     """
@@ -210,7 +210,7 @@ def upload_directory_files_to_ihealth(token, directory:str):
                     try:
                         # Only try to parse file if it is name ends with .json
                         if file_name[-7:] == ".qkview":
-                            upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name, server_cert_ca_location)
+                            upload_results[file_contents] = upload_qkview_to_ihealth(token, file_contents, file_name, ca_cert)
                     # Catch when file is not parsable UTF 8 or similar
                     except UnicodeDecodeError:
                         print('Fail to read file - ' + file_name + ' : Is this a file to be read?')
@@ -340,7 +340,7 @@ if __name__ == "__main__":
 
     # Submit Report if chosen
     if (ihealth_operation_chosen == "1_submit") or (ihealth_operation_chosen == "all"):
-        results_dict = upload_directory_files_to_ihealth(login_token, base_directory)
+        results_dict = upload_directory_files_to_ihealth(login_token, base_directory, server_cert_ca_location)
         # Save Results ID List results id list
         f5_ihealth_qkview_id_list = [ ]
         for qkview_report in results_dict:
